@@ -85,3 +85,45 @@ Registro das mensagens trocadas durante as conversas entre usuários e profissio
 ### Perfis
 
 Gerenciamento das informações e características dos perfis de **pessoas** e **profissionais de psicologia**, permitindo diferenciar seus respectivos papéis dentro da plataforma.
+
+## Tecnologias Utilizadas
+
+O Wings foi desenvolvido utilizando uma arquitetura separada entre **Frontend, Backend e Banco de Dados**, permitindo organizar responsabilidades e facilitar a manutenção e evolução da aplicação.
+
+### Frontend
+
+* **React** — construção da interface e componentes da aplicação.
+* **TypeScript** — tipagem estática e maior segurança durante o desenvolvimento.
+* **HTML5** — estruturação dos elementos da aplicação.
+* **CSS3 (Vanilla CSS)** — estilização e responsividade da interface.
+
+### Backend
+
+* **Laravel** — desenvolvimento da API, regras de negócio, autenticação e gerenciamento das operações do sistema.
+
+### Banco de Dados
+
+* **MySQL** — armazenamento e gerenciamento dos dados da aplicação.
+
+### Visão geral da Stack
+
+```text
+┌─────────────────────────────────┐
+│            FRONTEND             │
+│ React + TypeScript + HTML + CSS │
+└───────────────┬─────────────────┘
+                │
+                │ API / HTTP
+                ▼
+┌─────────────────────────────────┐
+│            BACKEND              │
+│             Laravel             │
+└───────────────┬─────────────────┘
+                │
+                │
+                ▼
+┌─────────────────────────────────┐
+│          BANCO DE DADOS         │
+│              MySQL              │
+└─────────────────────────────────┘
+```
