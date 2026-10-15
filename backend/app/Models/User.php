@@ -6,8 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {
+    protected function casts(): array
+    {
+        return [
+            'senha' => 'hashed', // Garante o hash automático
+        ];
+    }
     protected $table = 'usuario';
     protected $primaryKey = 'id_usuario';
-    public $timestamps = true;
+    public $incrementing = true;
+    protected $keyType = 'int';
+    public $timestamps = false;
     protected $guarded = []; //Somente para uso fora de produção
 }
