@@ -3,100 +3,93 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+
 use App\Models\User;
+
 use App\Http\Resources\UserResource;
+
+use App\Http\Requests\StoreUserRequest;
+
+use App\Http\Requests\UpdateUserRequest;
+
 use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    // /api/ - GET
+    // GET /api/user
     public function index() 
     {
-        try {
-            $users = User::select('id_usuario', 'nome', 'email', 'data_nasc')->get();
-            return (UserResource::collection($users))->additional([
-                'message' => "Usuários encontrados com sucesso",
-            ], 200);
-        } catch (QueryException $e) {
-            return reponse()->json([
-                'message' => 'Erro ao carregar os dados do servidor',
-                'error' => $e,
-            ], 500);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Ocorreu um erro inesperado',
-                'error' => $e,
-            ], 500); 
-        }
+        $users = User::select('id_usuario', 'nome', 'email', 'data_nasc')->get();
+        
+        return response()->json([
+            'data' => UserResource::collection($users),
+            'message' => 'Usuarios encontrados com sucesso',
+        ]);
+        return (UserResource::collection($users))->additional([
+            
+        ])->response()-setStatusCode(200);
     }
 
-    // /api/{id} - GET
+    // GET /api/user/{id}
     public function show($id)
     {
-        try {
-            $user = User::findOrFail($id);
-            return (new UserResource($user))->additional([
-                'message' => "Usuário $user->nome encontrado com sucesso",
-            ], 200);
-        } catch (\NotFoundHttpException $e) {
-            return response()->json([
-                'message' => "Usuário $id não existe",
-                'error' => $e,
-            ], 404);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Ocorreu um erro inesperado',
-                'error' => $e,
-            ], 500);
-        }
+        $user = User::findOrFail($id);
+
+        return response()->json([
+            'data' => new UserResource($user),
+            'message' => 'Usuário encontrado com sucesso!'
+        ], 200);
     }
     
     // api/user - POST
-    public function store(Request $request) {
-        try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:50',
-                'email' => 'required|email|unique:usuario,email',
-                'password' => 'required|string',
-                'date' => 'required|date',
-            ]);
-            
-            // Verifica se todos os campos foram validados
-            if ($validator->fails()) {
-                $errors = $validator->errors();
+    public function store(StoreUserRequest $request) {
+        $user = User::create([
+            'nome' => $request->name,
+            'senha' => $request->password,
+            'email' => $request->email,
+            'data_nasc' => $request->date,
+            'status_usuario' => 'Ativo',
+            'num_denuncias_usuario' => 0,
+        ]);
+        return response()->json([
+            'data' => new UserResource($user),
+            'message' => 'Conta criada com sucesso',
+        ], 201);
+    }
 
-                return response()->json([
-                    'error' => $errors->all(),
-                    'message' => 'Erro ao tentar criar usuário' 
-                ], 400);
-            }
+    // api/user/{id} - UPDATE
+    public function update(UpdateUserRequest $request, $id) {
+        $user = User::findOrFail($id);
 
-            $validadeRequest = $validator->validated();
+        $validated = $request->validated();
+        $data = [];
 
-            $user_created = User::create([
-                'nome' => $validadeRequest['name'],
-                'senha' => $validadeRequest['password'],
-                'email' => $validadeRequest['email'],
-                'data_nasc' => $validadeRequest['date'],
-                'status_usuario' => 'Ativo',
-                'num_denuncias_usuario' => 0,
-            ]);
-    
-            return response()->json([
-                'data' => $validadeRequest,
-                'message' => "Conta criada com sucesso",
-            ], 201);
-        } catch (\QueryException $e)  { // Exception do banco de dados
-            return response()->json([
-                'message' => 'Erro ao criar conta',
-                'error' => $e,
-            ], 500);
-        } catch (\Exception $e)  { // Exception inesperadas
-            return response()->json([
-                'message' => 'Ocorreu um erro inseperado',
-                'error' => $e,
-            ], 500);
+        $fieldMap = [
+            'name' => 'nome' ,
+            'email' => 'email',
+            'cpf' => 'cpf',
+            'date' => 'data_nasc',
+            'password' => 'senha',
+            'statusUser' => 'status_usuario',
+            'numReport' => 'num_denuncias_usuario',
+            'timeSusp' => 'tempo_suspensao',
+            'isAdmin' => 'e_admin',
+            'isProf' => 'e_profissional',
+        ];
+
+        foreach ($fieldMap as $requestKey => $dbColumn) {
+            if (isset($validated[$requestKey])) {
+                $data[$dbColumn] = $validated[$requestKey];
+            } 
         }
-    } 
+        
+        $user->update($data);
+
+        return response()->json([
+            'data' => new UserResource($user),
+            'message' => 'Usuário Atualizado com sucesso',
+        ], 200);
+    }
 }
