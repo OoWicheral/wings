@@ -19,6 +19,7 @@ class StoreUserRequest extends FormRequest
             'email' => 'required|email|unique:usuario,email',
             'password' => 'required|string|max:50',
             'date' => 'required|date',
+            'tel' => 'required|celular_com_ddd'
         ];
     }
 }

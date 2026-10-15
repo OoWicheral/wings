@@ -4,17 +4,21 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 
-use App\Models\User;
+use App\Models\User; // Tabela Usuario do banco de dados
+
+use App\Models\Telephone; // Tabela Telefone do banco de dados
 
 use App\Http\Resources\UserResource;
 
-use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\StoreUserRequest; // Validador de json enviado para POST
 
-use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\UpdateUserRequest; // Validador de json enviado para UPDATE
 
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
+
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -45,6 +49,8 @@ class UserController extends Controller
     
     // api/user - POST
     public function store(StoreUserRequest $request) {
+
+    $user = DB::transaction(function() use ($request) {
         $user = User::create([
             'nome' => $request->name,
             'senha' => $request->password,
@@ -53,6 +59,23 @@ class UserController extends Controller
             'status_usuario' => 'Ativo',
             'num_denuncias_usuario' => 0,
         ]);
+
+        if (isset($request['tel'])) {
+                $cleanNumbers = preg_replace('/\D/', '', $request['tel']);
+                
+                if (strlen($cleanNumbers) == 11) {
+                    $cleanNumbers = '55' . $cleanNumbers;
+                }
+
+                Telephone::create([
+                    'id_usuario' => $user->id_usuario,
+                    'telefone' => $cleanNumbers,
+                ]);
+            }
+
+        return $user;
+    });
+       
         return response()->json([
             'data' => new UserResource($user),
             'message' => 'Conta criada com sucesso',
@@ -80,15 +103,35 @@ class UserController extends Controller
         ];
 
         foreach ($fieldMap as $requestKey => $dbColumn) {
-            if (isset($validated[$requestKey])) {
+            if (isset($validated[$requestKey]) && $requestKey != 'tel') {
                 $data[$dbColumn] = $validated[$requestKey];
             } 
         }
+
+        $saved = DB::transaction(function() use ($user, $data, $validated) {
+            if (!empty($data)) {
+                $user->update($data);
+            }
+            
+            if (isset($validated['tel'])) {
+                $cleanNumbers = preg_replace('/\D/', '', $validated['tel']);
+                
+                if (strlen($cleanNumbers) == 11) {
+                    $cleanNumbers = '55' . $cleanNumbers;
+                }
+
+                Telephone::create([
+                    'id_usuario' => $user->id_usuario,
+                    'telefone' => $cleanNumbers,
+                ]);
+            }
+
+            return $user;
+        });
         
-        $user->update($data);
 
         return response()->json([
-            'data' => new UserResource($user),
+            'data' => new UserResource($saved),
             'message' => 'Usuário Atualizado com sucesso',
         ], 200);
     }

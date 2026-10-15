@@ -42,6 +42,7 @@ class UpdateUserRequest extends FormRequest
             'timeSusp' => 'sometimes|required|date',
             'isAdmin' => 'sometimes|required|boolean',
             'isProf' => 'sometimes|required|boolean',
+            'tel' => 'sometimes|required|celular_com_ddd'
         ];
 
         if ($user && !empty($user->cpf)) {
