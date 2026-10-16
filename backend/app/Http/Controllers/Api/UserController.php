@@ -10,9 +10,15 @@ use App\Models\Telephone; // Tabela Telefone do banco de dados
 
 use App\Http\Resources\UserResource;
 
-use App\Http\Requests\StoreUserRequest; // Validador de json enviado para POST
+use App\Http\Requests\StoreUserRequest; // Validador de json enviado para POST de cadastro
 
 use App\Http\Requests\UpdateUserRequest; // Validador de json enviado para UPDATE
+
+use App\Http\Requests\LoginUserRequest; // Validador de json enviado para POST de login
+
+use Illuminate\Support\Facades\Auth; // Função de autentificação
+
+use Illuminate\Validation\ValidationException; // Validador de exceções de autentificação
 
 use Illuminate\Http\Request;
 
@@ -30,10 +36,7 @@ class UserController extends Controller
         return response()->json([
             'data' => UserResource::collection($users),
             'message' => 'Usuarios encontrados com sucesso',
-        ]);
-        return (UserResource::collection($users))->additional([
-            
-        ])->response()-setStatusCode(200);
+        ], 200);
     }
 
     // GET /api/user/{id}
@@ -82,7 +85,28 @@ class UserController extends Controller
         ], 201);
     }
 
-    // api/user/{id} - UPDATE
+    // api/user/login - POST
+    public function login(LoginUserRequest $request) {
+        $credential = [
+            'email' => $request->email,
+            'password' => $request->password,
+        ];
+
+        if (! Auth::attempt($credential)) {
+            throw ValidationException::withMessages([
+                'credential' => [__('auth.failed')],
+            ]); 
+        }
+
+        $user = Auth::user();
+
+        return response()->json([
+            'data' => new UserResource($user),
+            'message' => 'Login realizado com sucesso!',
+        ], 200);
+    }
+
+    // api/user/{id} - UPDATE 
     public function update(UpdateUserRequest $request, $id) {
         $user = User::findOrFail($id);
 

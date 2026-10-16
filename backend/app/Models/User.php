@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable; 
+use Illuminate\Notifications\Notifiable;
+
+
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class User extends Model
+class User extends Authenticatable
 {
+    use Notifiable;
+    
     protected function casts(): array
     {
         return [
@@ -18,6 +23,11 @@ class User extends Model
     public function telephones() : HasMany {
         return $this->hasMany(Telephone::class, 'id_usuario', 'id_usuario');
     }
+
+    public function getAuthPassword() {
+        return $this->senha;
+    }
+
     protected $table = 'usuario';
     protected $primaryKey = 'id_usuario';
     public $incrementing = true;
