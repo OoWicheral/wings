@@ -12,7 +12,7 @@
         password: string;
     };
 
-    export async function createUser(user: UserCreate): Promise<User> | undefined {
+    export async function createUser(user: UserCreate): Promise<User | undefined> {
 
         try {
 
@@ -21,7 +21,7 @@
             return undefined;    
             }
 
-            const response = await fetch("rotaaa", {
+            const response = await fetch("api/user", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -29,8 +29,8 @@
                 body: JSON.stringify(user),
             });
 
-            if (!response) {
-                console.error("Erro ao criar User");
+            if (!response.ok) {
+                console.error("Erro ao criar User", response.status);
                 return undefined; 
             }
 

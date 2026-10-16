@@ -4,25 +4,25 @@ import { z, ZodError } from 'zod'
 import type { UserCreate } from '../type/User'
 import { useAuth } from '../hooks/use-auth'
 
-// 1. Schema do Zod atualizado com a validação da Data
+
 const signUpSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.string().pipe(z.email('E-mail Invalido!!!')),
   password: z
     .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .regex(/[0-9]/, 'Password must contain at least one number'),
+    .min(8, 'A senha deve ter mais que 8 caracteres')
+    .regex(/[A-Z]/, 'A senha deve conter pelo menos 1 letra maiscula')
+    .regex(/[a-z]/, 'A senha deve conter pelo menos 1 letra minuscula')
+    .regex(/[0-9]/, 'A senha deve conter pelo menos 1 numero'),
   name: z.string().min(1, 'Name is required'),
-  // O Zod recebe a string do input e tenta transformar em um objeto Date válido
+  
   dateNasc: z.string().transform((val) => new Date(val)),
 })
 
 export default function SignUp() {
   const navigate = useNavigate()
-  const { cadastro } = useAuth() // Utilizando o método 'cadastro' do seu hook
+  const { cadastro } = useAuth() 
 
-  // No estado do React, mantemos temporariamente como string para o input HTML funcionar
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -44,10 +44,10 @@ export default function SignUp() {
       setIsSubmitting(true)
       setErrors({})
 
-      // O validatedData aqui já terá o campo dateNasc convertido para o tipo Date do TS
+      
       const validatedData = signUpSchema.parse(data) as UserCreate
 
-      // Envia o objeto perfeito com o tipo Date para a API
+    
       await cadastro(validatedData)
       
       navigate('/app')

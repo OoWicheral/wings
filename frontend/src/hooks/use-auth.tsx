@@ -1,13 +1,13 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import type { User, UserCreate, LoginCredentials } from "../type/User";
 import { createUser } from "../type/User";
 
 
 interface AuthContextType {
     user: User | undefined;
-    login: (credentials: LoginCredentials) => void;
+    login: (credentials: LoginCredentials) => Promise<void>;
     cadastro: (user: UserCreate) => Promise<void>;
-    logout: () => void;
+    logout: () => Promise<void>;
     isLoading: boolean;
 }
 
@@ -17,11 +17,7 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(()=> {
-        checkAuth();
-    }, []);
-
-    const checkAuth = async () => {
+    const checkAuth = useCallback(async () => {
         try {
 
             const response = await fetch("/api/auth/me", {
@@ -42,14 +38,18 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
         } finally {
             setIsLoading(false);
         }
-    }
+    }, []);
+
+     useEffect(()=> {
+        void checkAuth();
+    }, [checkAuth]);
 
     // Autentica o Login
     const login = async (credentials: LoginCredentials) => {
 
         const response = await fetch("/api/auth/login", {
             method: "POST",
-            headers: { "Content-Type" : "aplication/json"},
+            headers: { "Content-Type" : "application/json"},
             credentials: "include",
             body: JSON.stringify(credentials)
         });
