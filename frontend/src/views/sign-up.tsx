@@ -1,153 +1,212 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { z, ZodError } from 'zod'
-import type { UserCreate } from '../type/User'
-import { useAuth } from '../hooks/use-auth'
-
+import { useState } from "react";
+import type { SubmitEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import type { UserCreate } from "../type/User";
+import { useAuth } from "../hooks/use-auth";
 
 const signUpSchema = z.object({
-  email: z.string().pipe(z.email('E-mail Invalido!!!')),
-  password: z
-    .string()
-    .min(8, 'A senha deve ter mais que 8 caracteres')
-    .regex(/[A-Z]/, 'A senha deve conter pelo menos 1 letra maiscula')
-    .regex(/[a-z]/, 'A senha deve conter pelo menos 1 letra minuscula')
-    .regex(/[0-9]/, 'A senha deve conter pelo menos 1 numero'),
-  name: z.string().min(1, 'Name is required'),
-  
-  dateNasc: z.string().transform((val) => new Date(val)),
-})
+  name: z.string()
+      .trim()
+      .min(1, "O nome é obrigatório"),
+
+  email: z.string()
+      .trim()
+      .email("Digite um e-mail válido"),
+
+  password: z.string()
+      .min(8, "A senha precisa ter pelo menos 8 caracteres")
+      .regex(/[A-Z]/, "A senha precisa ter pelo menos uma letra maiúscula")
+      .regex(/[a-z]/, "A senha precisa ter pelo menos uma letra minúscula")
+      .regex(/[0-9]/, "A senha precisa ter pelo menos um número"),
+
+  dateNasc: z.string()
+      .min(1, "Informe sua data de nascimento")
+      .refine((valor) => {
+        const data = new Date(`${valor}T00:00:00.000Z`);
+
+        return (
+            !Number.isNaN(data.getTime()) &&
+            data.toISOString().slice(0, 10) === valor
+        );
+      }, "Informe uma data válida")
+      .transform((valor) => new Date(`${valor}T00:00:00`))
+});
+
+type CampoCadastro = "name" | "email" | "password" | "dateNasc";
+
+type ErrosCadastro = Partial<Record<CampoCadastro, string[]>>;
 
 export default function SignUp() {
-  const navigate = useNavigate()
-  const { cadastro } = useAuth() 
 
-  
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    name: '',
-    dateNasc: '', 
-  })
-  
-  const [errors, setErrors] = useState<{
-    email?: string
-    password?: string
-    name?: string
-    dateNasc?: string
-    submit?: string
-  }>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
+      nome: "",
+      email: "",
+      senha: "",
+      dataNasc: ""
+  });
 
-  const handleSubmit = async (data: typeof formData) => {
+
+
+  const [erros, setErros] = useState<ErrosCadastro>({});
+  const [erroGeral, setErroGeral] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { cadastro } = useAuth();
+  const navigate = useNavigate();
+
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setErros({});
+    setErroGeral("");
+
+
+    const resultado = signUpSchema.safeParse({
+      name: formData.nome,
+      formData.email,
+      password: formData.senha,
+      dateNasc: formData.dataNasc
+    });
+
+
+    if (!resultado.success) {
+      const novosErros: ErrosCadastro = {};
+
+      for (const erro of resultado.error.issues) {
+        const campo = erro.path[0] as CampoCadastro;
+
+        const mensagens = novosErros[campo] ?? [];
+        mensagens.push(erro.message);
+        novosErros[campo] = mensagens;
+      }
+
+      setErros(novosErros);
+      return;
+    }
+
+
+    const dados: UserCreate = resultado.data;
+
     try {
-      setIsSubmitting(true)
-      setErrors({})
+      setIsSubmitting(true);
 
-      
-      const validatedData = signUpSchema.parse(data) as UserCreate
+      await cadastro(dados);
 
-    
-      await cadastro(validatedData)
-      
-      navigate('/app')
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const formattedErrors: Record<string, string> = {}
-        error.issues.forEach((err) => {
-          if (err.path) {
-            formattedErrors[err.path.toString()] = err.message
-          }
-        })
-        setErrors(formattedErrors)
+      navigate("/app");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setErroGeral(error.message);
       } else {
-        setErrors({ submit: 'Failed to create account. Please try again.' })
+        setErroGeral("Não foi possível realizar o cadastro.");
       }
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-    
-    if (errors[name as keyof typeof errors]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }))
-    }
-  }
 
   return (
-    <div>
-      <h2>Sign Up</h2>
-      
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          handleSubmit(formData)
-        }}
-      >
-        <div>
-          <label htmlFor="name">Name</label>
-          <input
-            id="name"
-            name="name"
-            type="text"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            placeholder="Enter your name"
-          />
-          {errors.name && <p style={{ color: 'red' }}>{errors.name}</p>}
-        </div>
+      <div>
+        <h1>Cadastro</h1>
 
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            placeholder="Enter your email"
-          />
-          {errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
-        </div>
-        
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            placeholder="Create a password"
-          />
-          {errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
-        </div>
+        <form onSubmit={handleSubmit} noValidate>
+          <div>
+            <label htmlFor="nome">Nome:</label>
 
-        <div>
-          <label htmlFor="dateNasc">Date of Birth</label>
-          <input
-            id="dateNasc"
-            name="dateNasc"
-            type="date"
-            value={formData.dateNasc}
-            onChange={handleChange}
-            required
-          />
-          {errors.dateNasc && <p style={{ color: 'red' }}>{errors.dateNasc}</p>}
-        </div>
-        
-        {errors.submit && <p style={{ color: 'red' }}>{errors.submit}</p>}
-        
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Creating Account...' : 'Create Account'}
-        </button>
-      </form>
-    </div>
-  )
+            <input
+                id="nome"
+                type="text"
+                value={formData.nome}
+                onChange={(evento) => setNome(evento.target.value)}
+                aria-invalid={Boolean(erros.name?.length)}
+                aria-describedby="erro-nome"
+            />
+
+            <div id="erro-nome">
+              {erros.name?.map((mensagem, indice) => (
+                  <p key={`${mensagem}-${indice}`}>
+                    {mensagem}
+                  </p>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="email">E-mail:</label>
+
+            <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(evento) => setEmail(evento.target.value)}
+                aria-invalid={Boolean(erros.email?.length)}
+                aria-describedby="erro-email"
+            />
+
+            <div id="erro-email">
+              {erros.email?.map((mensagem, indice) => (
+                  <p key={`${mensagem}-${indice}`}>
+                    {mensagem}
+                  </p>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="senha">Senha:</label>
+
+            <input
+                id="senha"
+                type="password"
+                value={senha}
+                onChange={(evento) => setSenha(evento.target.value)}
+                aria-invalid={Boolean(erros.password?.length)}
+                aria-describedby="erro-senha"
+            />
+
+            <div id="erro-senha">
+              {erros.password?.map((mensagem, indice) => (
+                  <p key={`${mensagem}-${indice}`}>
+                    {mensagem}
+                  </p>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="dataNasc">
+              Data de nascimento:
+            </label>
+
+            <input
+                id="dataNasc"
+                type="date"
+                value={dataNasc}
+                onChange={(evento) => setDataNasc(evento.target.value)}
+                aria-invalid={Boolean(erros.dateNasc?.length)}
+                aria-describedby="erro-dataNasc"
+            />
+
+            <div id="erro-dataNasc">
+              {erros.dateNasc?.map((mensagem, indice) => (
+                  <p key={`${mensagem}-${indice}`}>
+                    {mensagem}
+                  </p>
+              ))}
+            </div>
+          </div>
+
+          {erroGeral && (
+              <p role="alert">
+                {erroGeral}
+              </p>
+          )}
+
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Cadastrando..." : "Cadastrar"}
+          </button>
+        </form>
+      </div>
+  );
 }
