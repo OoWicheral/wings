@@ -14,7 +14,8 @@
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
         "laravel/wayfinder": "^0.1.14",
-        "laravellegends/pt-br-validator": "^13.0"
+        "laravellegends/pt-br-validator": "^13.0",
+        "tymon/jwt-auth": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24",
