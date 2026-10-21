@@ -84,28 +84,7 @@ class UserController extends Controller
             'message' => 'Conta criada com sucesso',
         ], 201);
     }
-
-    // api/user/login - POST
-    public function login(LoginUserRequest $request) {
-        $credential = [
-            'email' => $request->email,
-            'password' => $request->password,
-        ];
-
-        if (! Auth::attempt($credential)) {
-            throw ValidationException::withMessages([
-                'credential' => [__('auth.failed')],
-            ]); 
-        }
-
-        $user = Auth::user();
-
-        return response()->json([
-            'data' => new UserResource($user),
-            'message' => 'Login realizado com sucesso!',
-        ], 200);
-    }
-
+    
     // api/user/{id} - UPDATE 
     public function update(UpdateUserRequest $request, $id) {
         $user = User::findOrFail($id);

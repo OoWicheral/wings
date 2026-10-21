@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
+use App\Http\Requests\AuthUserRequest;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -13,23 +14,10 @@ class AuthController extends Controller
     /**
      * Handle user login and generate JWT token
      */
-    public function login(Request $request)
+    public function login(AuthUserRequest $request)
     {
-        $data = $request->validate(
-            [
-                'email' => 'required|email',
-                'password' => 'required|string|min:6',
-            ],
-            [
-                'email.required' => 'O email é obrigatório.',
-                'email.email' => 'O email deve ser um endereço de email válido.',
-                'password.required' => 'A senha é obrigatória.',
-                'password.min' => 'A senha deve ter no mínimo 6 caracteres.',
-            ]
-        );
-
         try {
-            if (! $token = JWTAuth::attempt($data)) {
+            if (! $token = JWTAuth::attempt($request->validated())) {
                 return response()->json(['error' => 'Credenciais inválidas'], 401);
             }
 
@@ -47,7 +35,7 @@ class AuthController extends Controller
     /**
      * Handle the incoming request (invocable controller fallback)
      */
-    public function __invoke(Request $request)
+    public function __invoke(AuthUserRequest $request)
     {
         return $this->login($request);
     }

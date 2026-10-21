@@ -17,9 +17,21 @@ class StoreUserRequest extends FormRequest
         return [
             'name' => 'required|string|max:50',
             'email' => 'required|email|unique:usuario,email',
-            'password' => 'required|string|max:50',
+            'password' => 'required|string|max:60',
             'date' => 'required|date',
             'tel' => 'required|celular_com_ddd'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.max' => "Nome muito grande",
+            'email.email' => "Digite um email válido",
+            'email.unique' => "Email já cadastrado, tente entrar",
+            'password.max' => "Sua senha é muito comprida",
+            'date.date' => "Insira uma data válida",
+            'tel.celular_com_ddd' => "Insira um telefone válido",
         ];
     }
 }

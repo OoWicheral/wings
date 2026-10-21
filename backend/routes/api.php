@@ -13,8 +13,6 @@ Route::post('user', [UserController::class, 'store']);
 
 // Autenticação (Login)
 Route::post('auth/login', [AuthController::class, 'login']);
-Route::post('login', [AuthController::class, 'login']);
-Route::post('user/login', [AuthController::class, 'login']);
 
 /*
 Rotas Protegidas (Exigem Token JWT válido)
