@@ -38,10 +38,18 @@ const signUpSchema = z.object({
             data.toISOString().slice(0, 10) === valor
         );
       }, "Informe uma data válida")
-      .transform((valor) => new Date(`${valor}T00:00:00`))
+      .transform((valor) => new Date(`${valor}T00:00:00`)),
+
+  tel: z.string()
+      .trim()
+      .min(1, "O telefone é obrigatório")
+      .refine(
+          (valor) => valor.replace(/\D/g, "").length === 11,
+          "Informe um telefone com DDD válido"
+      ),
 });
 
-type CampoCadastro = "name" | "email" | "password" | "dateNasc";
+type CampoCadastro = "name" | "email" | "password" | "dateNasc" | "tel";
 
 type ErrosCadastro = Partial<Record<CampoCadastro, string[]>>;
 
@@ -51,6 +59,7 @@ const camposIniciais = {
   password: "",
   confirmPassword: "",
   dateNasc: "",
+  tel: "",
   isProfessional: false
 };
 
@@ -201,6 +210,29 @@ export default function SignUp() {
 
             <div id="erro-email">
               {erros.email?.map((mensagem, indice) => (
+                  <p key={`${mensagem}-${indice}`}>
+                    {mensagem}
+                  </p>
+              ))}
+            </div>
+          </div>
+
+          <div className="signup-field">
+            <input
+                id="tel"
+                name="tel"
+                type="tel"
+                className="signup-input"
+                placeholder="Telefone com DDD*"
+                autoComplete="tel"
+                value={formData.tel}
+                onChange={handleChange}
+                aria-invalid={Boolean(erros.tel?.length)}
+                aria-describedby="erro-tel"
+            />
+
+            <div id="erro-tel">
+              {erros.tel?.map((mensagem, indice) => (
                   <p key={`${mensagem}-${indice}`}>
                     {mensagem}
                   </p>

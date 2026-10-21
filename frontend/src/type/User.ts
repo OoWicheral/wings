@@ -3,7 +3,8 @@
         name: string,
         email: string,
         password: string,
-        dateNasc: Date
+        dateNasc: Date,
+        tel: string
     }
 
     export type UserCreate = Omit<User, "id">;
@@ -12,35 +13,43 @@
         password: string;
     };
 
-    export async function createUser(user: UserCreate): Promise<User | undefined> {
+    export interface LoginResponse {
+        access_token: string;
+        token_type: string;
+        expires_in: number;
+        user: User;
+    }
 
-        try {
 
-            if (!user.email.includes("@")) {
-            console.error("E-mail invalido!!");
-            return undefined;    
-            }
 
-            const response = await fetch("api/user", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(user),
-            });
+    interface CreateUserResponse {
+        data: User;
+        message: string;
+    }
 
-            if (!response.ok) {
-                console.error("Erro ao criar User", response.status);
-                return undefined; 
-            }
+    export async function createUser(user: UserCreate): Promise<User> {
+        const response = await fetch("/api/user", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+            },
+            body: JSON.stringify({
+                name: user.name,
+                email: user.email,
+                password: user.password,
+                date: user.dateNasc.toISOString().slice(0, 10),
+                tel: user.tel,
+            }),
+        });
 
-            const userCreate: User = await response.json();
+        const result: CreateUserResponse = await response.json();
 
-            return userCreate;
-
-        } catch (error) {
-            console.error("Erro de conexão: ", error)
-            return undefined;
+        if (!response.ok) {
+            throw new Error(
+                result.message ?? "Erro ao cadastrar usuário."
+            );
         }
-    
+
+        return result.data;
     }
