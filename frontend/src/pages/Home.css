@@ -1,3 +1,11 @@
+* {
+    background: white;
+}
+
+.body-chat {
+    background: white;
+} 
+
 main {
     display: flex;
     flex-direction: column;
@@ -7,4 +15,9 @@ main {
 
 .span-home {
     color: #DD6413;
+}
+
+.btn-aside {
+    background: transparent;
+    border: none;
 }

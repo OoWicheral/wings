@@ -3,6 +3,7 @@ import { AuthProvider } from './hooks/use-auth';
 import SignUp from './pages/Sign-up.tsx';
 import SignOn from "./pages/Sign-on.tsx";
 import Home from './pages/Home.tsx';
+import ChatIA from './pages/Chat-ia.tsx';
 
 
 export default function App() {
@@ -13,7 +14,7 @@ export default function App() {
      <AuthProvider>
       <Router>
         <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<ChatIA />} />
             <Route path="/cadastro" element={<SignUp />} />
             <Route path="/login" element={<SignOn />} />
             <Route path="/app" element={<App/>} />
