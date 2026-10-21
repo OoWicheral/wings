@@ -1,0 +1,14 @@
+.card {
+    width: 512px;
+    min-height: 641px;
+    border-radius: 41px;
+
+    background: linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.2) 0%,
+            rgba(255, 255, 255, 0.1) 100%
+    );
+
+    box-shadow: 0 12px 64.2px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(4px);
+}

@@ -1,0 +1,30 @@
+@import "./variables.css";
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body, #root {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+}
+
+body {
+    min-height: 100vh;
+    font-family: "Inter", sans-serif;
+    background: var(--color-bg-main);
+    color: var(--color-text);
+}
+
+input, button, select, textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+img {
+    max-width: 100%;
+}

@@ -67,7 +67,7 @@ export default defineConfig({
             '.github/**',
             'composer.json',
             'resources/js/components/ui/*',
-            'resources/views/mail/*',
+            'resources/pages/mail/*',
         ],
         sortTailwindcss: {
             functions: ['clsx', 'cn', 'cva'],

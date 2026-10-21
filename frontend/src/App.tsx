@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route,Navigate } from 'react-router-dom';
 import { AuthProvider } from './hooks/use-auth';
-import './App.css'
-import SignUp from './views/sign-up';
+import SignUp from './pages/Sign-up.tsx';
+
 
 export default function App() {
   

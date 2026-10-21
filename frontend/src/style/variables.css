@@ -1,0 +1,33 @@
+:root {
+    --color-page: rgba(255, 255, 255, 0.95);
+    --color-glass: rgba(255, 255, 255, 0.2);
+    --color-glass-light: rgba(255, 255, 255, 0.1);
+    --color-overlay: rgba(255, 255, 255, 0.05);
+
+    --color-text: #D9E0EB;
+    --color-text-header: rgba(239, 239, 239, 0.9);
+    --color-text-header-button: rgba(239, 239, 239, 0.95);
+    --color-text-button: #FFEDE1;
+    --color-text-muted: rgba(177, 177, 177, 0.98);
+    --color-input-border: #D9E0EB;
+
+    --color-button: rgba(181, 91, 30, 0.89);
+    --color-button-border: rgba(198, 140, 101, 0.69);
+    --color-button-gradient-start: rgba(193, 87, 16, 0.85);
+    --color-button-gradient-end: rgba(239, 104, 14, 0.85);
+
+    --color-date-background: rgba(217, 217, 217, 0.25);
+    --color-date-option: rgba(217, 217, 217, 0.35);
+    --color-date-text: rgba(217, 224, 235, 0.8);
+    --color-bg-main: rgb(35, 64, 179);
+
+    --color-shadow: rgba(0, 0, 0, 0.25);
+    --color-glass-border: rgba(255, 255, 255, 0.2);
+
+    --radius-input: 19px;
+    --radius-card: 41px;
+    --radius-header: 20px;
+    --radius-button: 19px;
+
+    --blur-glass: 4px;
+}
