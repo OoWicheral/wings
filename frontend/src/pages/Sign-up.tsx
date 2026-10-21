@@ -1,13 +1,14 @@
 
 import { useState } from "react";
 import type { ChangeEvent, SubmitEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { z } from "zod";
 import type { UserCreate } from "../type/User";
 import { useAuth } from "../hooks/use-auth";
 import Header from "../components/Header.tsx";
 import Card from "../components/Card.tsx";
 import "./Sign-up.css";
+
 
 
 const senhaSchema = z.string()
@@ -335,7 +336,7 @@ export default function SignUp() {
 
           <p className="signup-login-link">
             Já possui conta?{" "}
-            <a href="/login">Entrar</a>
+            <Link to="/login">Entrar</Link>
           </p>
 
 

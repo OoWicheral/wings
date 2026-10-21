@@ -1,6 +1,8 @@
 .card {
+    box-sizing: border-box;
     width: 512px;
-    min-height: 641px;
+    padding: 32px;
+    height: auto;
     border-radius: 41px;
 
     background: linear-gradient(
