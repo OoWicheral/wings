@@ -1,10 +1,145 @@
-main {
+.home-main {
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+    background: linear-gradient(135deg, #2558d1 0%, #1e40af 100%);
+    color: #ffffff;
+    width: 100%;
+}
+
+.home-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 800px;
+    padding: 0 20px;
+    margin-top: 10px;
+}
+
+/* Badge do Gemini */
+.badge-container {
+    margin-bottom: 15px;
+}
+
+.gemini-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 50px;
+    color: #ffffff;
+    font-size: 14px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+
+.icon-sparkle {
+    color: #ffd700;
+}
+
+/* Títulos */
+.hero-text-container h1 {
+    font-size: 2.3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    line-height: 1.2;
 }
 
 .span-home {
     color: #DD6413;
+}
+
+.hero-text-container p {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 600px;
+    margin-bottom: 30px;
+}
+
+/* Caixa de Prompt */
+.prompt-container {
+    width: 100%;
+    max-width: 700px;
+}
+
+.prompt-fieldset {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.prompt-fieldset textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 1rem;
+    resize: none;
+    outline: none;
+}
+
+.prompt-fieldset textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Ações / Botões Internos */
+.prompt-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.action-btn-left, .action-btn {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+}
+
+.action-btn-right-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.submit-btn {
+    background: #DD6413;
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+}
+
+/* Rodapé */
+.home-footer {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    padding: 20px;
+}
+
+.gemini-img{
+    height: 28px;
+    width: 28px;
 }
