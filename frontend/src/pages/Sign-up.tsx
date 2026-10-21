@@ -326,7 +326,7 @@ export default function SignUp() {
             </label>
           </div>
 
-          <button type="submit" disabled={isSubmitting}>
+          <button className="button-signup" type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Cadastrando..." : "Cadastrar-se"}
           </button>
 

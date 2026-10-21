@@ -94,7 +94,7 @@ input::placeholder {
 }
 
 
-button {
+.button-signup {
     box-sizing: border-box;
     width: 200px;
     min-height: 30px;
@@ -109,16 +109,16 @@ button {
     cursor: pointer;
 }
 
-.button:hover {
+.button-signup:hover {
     filter: brightness(1.05);
 }
 
-button:focus-visible {
+.button-signup:focus-visible {
     outline: 2px solid #D9E0EB;
     outline-offset: 3px;
 }
 
-button:disabled {
+.button-signup:disabled {
     cursor: not-allowed;
 }
 

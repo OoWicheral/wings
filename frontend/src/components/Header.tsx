@@ -19,7 +19,7 @@ export default function Header() {
                     Entrar
                 </a>
 
-                <a className="header_signup" href="/">
+                <a className="header_signup" href="/cadastro">
                     Cadastre-se
                 </a>
             </div>

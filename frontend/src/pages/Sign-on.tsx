@@ -160,7 +160,7 @@ export default function SignOn() {
 
                     <p className="login-signup-link">
                         Ainda não possui conta?{" "}
-                        <Link to="/">Cadastre-se</Link>
+                        <Link to="/cadastro">Cadastre-se</Link>
                     </p>
                 </form>
             </Card>
