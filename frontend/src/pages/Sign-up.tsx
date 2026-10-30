@@ -7,6 +7,7 @@ import type { UserCreate } from "../type/User";
 import { useAuth } from "../hooks/use-auth";
 import Header from "../components/Header.tsx";
 import Card from "../components/Card.tsx";
+import { PatternFormat } from 'react-number-format';
 import "./Sign-up.css";
 
 
@@ -219,7 +220,7 @@ export default function SignUp() {
           </div>
 
           <div className="signup-field">
-            <input
+            <PatternFormat
                 id="tel"
                 name="tel"
                 type="tel"
@@ -230,6 +231,10 @@ export default function SignUp() {
                 onChange={handleChange}
                 aria-invalid={Boolean(erros.tel?.length)}
                 aria-describedby="erro-tel"
+
+                format="(##) 9####-####"
+                allowEmptyFormatting={false}
+                mask="_"
             />
 
             <div id="erro-tel">
