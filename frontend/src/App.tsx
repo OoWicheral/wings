@@ -14,7 +14,7 @@ export default function App() {
      <AuthProvider>
       <Router>
         <Routes>
-            <Route path="/" element={<ChatIA />} />
+            <Route path="/" element={<Home />} />
             <Route path="/cadastro" element={<SignUp />} />
             <Route path="/login" element={<SignOn />} />
             <Route path="/app" element={<App/>} />

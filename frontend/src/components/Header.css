@@ -82,3 +82,192 @@
     white-space: nowrap;
 }
 
+.header_user_menu_container {
+    position: relative;
+}
+
+.header_user_btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.header_user_avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #d97706; /* Tom ambar parecido com o seu botão de cadastro */
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+
+.header_dropdown {
+    position: absolute;
+    right: 0;
+    top: 50px;
+    width: 220px;
+    background-color: #0f172a; /* Azul escuro bem elegante */
+    border: 1px solid #334155;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow: hidden;
+}
+
+.header_dropdown_info {
+    padding: 12px 16px;
+    border-bottom: 1px solid #1e293b;
+    display: flex;
+    flex-direction: column;
+}
+
+.header_dropdown_name {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.header_dropdown_email {
+    color: #94a3b8;
+    font-size: 12px;
+    margin-top: 2px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.header_dropdown_link {
+    padding: 10px 16px;
+    color: #e2e8f0;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.header_dropdown_link:hover {
+    background-color: #1e293b;
+}
+
+.header_dropdown_logout {
+    background: none;
+    border: none;
+    text-align: left;
+    padding: 10px 16px;
+    color: #f87171;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-top: 1px solid #1e293b;
+}
+
+.header_dropdown_logout:hover {
+    background-color: #1e293b;
+}
+
+/* Container relativo para posicionar o pop-up logo abaixo do botão */
+.header_profile_container {
+    position: relative;
+    display: inline-block;
+}
+
+/* Botão que envolve o avatar na navbar */
+.header_avatar_btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* Posicionamento absoluto do pop-up flutuante */
+.user-popup {
+    position: absolute;
+    right: 0;
+    top: 55px; /* Distância abaixo do header */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 12px 16px;
+    width: 280px;
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+    z-index: 1000;
+}
+
+/* Estilos internos do pop-up (mantidos) */
+.popup-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #d97706;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.popup-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-left: 12px;
+    margin-right: 12px;
+    overflow: hidden;
+}
+
+.popup-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.popup-email {
+    font-size: 12px;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 2px;
+}
+
+.popup-config-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+    flex-shrink: 0;
+}
+
+.popup-config-btn:hover {
+    background-color: #1e293b;
+    color: #ffffff;
+}
+
+
+
