@@ -13,4 +13,11 @@ class AiMessages extends Model
     public $timestamps = true;
     const CREATED_AT = 'criado_em'; // Altera o nome padrão das colunas timestamps
     const UPDATED_AT = 'modificado_em';
+
+    //permite inserção em massa das colunas abaixo
+    protected $fillable = [
+        'conteudo_msg',
+        'id_usuario',
+        'id_chat',
+    ];
 }

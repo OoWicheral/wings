@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\ChatAiMessage;
 
 /*
 Rotas Públicas (Sem necessidade de Token JWT)
@@ -25,5 +26,7 @@ Route::middleware('jwt')->group(function () {
     Route::get('/user/{id}/profile', [ProfileController::class, 'show']);
     // Usuários (Listar, Visualizar, Atualizar, Deletar)
     Route::apiResource('user', UserController::class)->except(['store']);
+    //ChatAi
+    Route::apiResource('chataimessage', ChatAiMessage::class);
 });
 
