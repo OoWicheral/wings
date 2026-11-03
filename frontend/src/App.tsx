@@ -3,7 +3,7 @@ import { AuthProvider } from './hooks/use-auth';
 import SignUp from './pages/Sign-up.tsx';
 import SignOn from "./pages/Sign-on.tsx";
 import Home from './pages/Home.tsx';
-import ChatIA from './pages/Chat-ia.tsx';
+// import ChatIA from './pages/Chat-ia.tsx';
 
 
 export default function App() {

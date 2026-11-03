@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\AiChat;
+use App\Models\AiMessages;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class AiChatController extends Controller
 {

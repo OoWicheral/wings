@@ -29,7 +29,7 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
                 return;
             }
 
-            const response = await fetch("/api/auth/me", {
+            const response = await fetch("http://127.0.0.1:8000/api/auth/me", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     Accept: "application/json",
@@ -62,7 +62,7 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
     const login = async (
         credentials: LoginCredentials
     ): Promise<void> => {
-        const response = await fetch("/api/auth/login", {
+        const response = await fetch("http://127.0.0.1:8000/api/auth/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -103,7 +103,7 @@ export function AuthProvider({ children }: {children: React.ReactNode}) {
 
         try {
             if (token) {
-                await fetch("/api/auth/logout", {
+                await fetch("http://127.0.0.1:8000/api/auth/logout", {
                     method: "POST",
                     headers: {
                         Authorization: `Bearer ${token}`,

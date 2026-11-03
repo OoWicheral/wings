@@ -64,17 +64,17 @@ class UserController extends Controller
         ]);
 
         if (isset($request['tel'])) {
-                $cleanNumbers = preg_replace('/\D/', '', $request['tel']);
-                
-                if (strlen($cleanNumbers) == 11) {
-                    $cleanNumbers = '55' . $cleanNumbers;
-                }
-
-                Telephone::create([
-                    'id_usuario' => $user->id_usuario,
-                    'telefone' => $cleanNumbers,
-                ]);
+            $cleanNumbers = preg_replace('/\D/', '', $request['tel']);
+            
+            if (strlen($cleanNumbers) == 11) {
+                $cleanNumbers = '55' . $cleanNumbers;
             }
+
+            Telephone::create([
+                'id_usuario' => $user->id_usuario,
+                'telefone' => $cleanNumbers,
+            ]);
+        }
 
         return $user;
     });
@@ -84,7 +84,7 @@ class UserController extends Controller
             'message' => 'Conta criada com sucesso',
         ], 201);
     }
-    
+
     // api/user/{id} - UPDATE 
     public function update(UpdateUserRequest $request, $id) {
         $user = User::findOrFail($id);

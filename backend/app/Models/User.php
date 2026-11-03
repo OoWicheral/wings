@@ -32,6 +32,8 @@ class User extends Authenticatable implements JWTSubject
     protected $keyType = 'int';
     public $timestamps = false;
     protected $guarded = []; //Somente para uso fora de produção
+    const CREATED_AT = 'criado_em'; // Altera o nome padrão das colunas timestamps
+    const UPDATED_AT = 'modificado_em';
 
     /** AUTENTICAÇÃO JWT */
     // Funções padrão da biblioteca
@@ -59,4 +61,5 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(Profile::class, 'id_usuario', 'id_usuario');
     }
+
 }
