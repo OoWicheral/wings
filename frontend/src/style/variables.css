@@ -1,33 +1,64 @@
+
 :root {
-    --color-page: rgba(255, 255, 255, 0.95);
-    --color-glass: rgba(255, 255, 255, 0.2);
-    --color-glass-light: rgba(255, 255, 255, 0.1);
-    --color-overlay: rgba(255, 255, 255, 0.05);
+    /* Tipografia */
+    --font-primary: "Nunito", sans-serif;
+    --font-heading: "Poppins", sans-serif;
 
-    --color-text: #D9E0EB;
-    --color-text-header: rgba(239, 239, 239, 0.9);
-    --color-text-header-button: rgba(239, 239, 239, 0.95);
-    --color-text-button: #FFEDE1;
-    --color-text-muted: rgba(177, 177, 177, 0.98);
-    --color-input-border: #D9E0EB;
+    /* Backgrounds */
+    --color-page: #F5F5F5;
+    --color-page-gradient-start: #F5F5F5;
+    --color-page-gradient-end: #E3E3E3;
+    --color-surface: #FFFFFF;
+    --color-surface-secondary: #E3E3E3;
 
-    --color-button: rgba(181, 91, 30, 0.89);
-    --color-button-border: rgba(198, 140, 101, 0.69);
-    --color-button-gradient-start: rgba(193, 87, 16, 0.85);
-    --color-button-gradient-end: rgba(239, 104, 14, 0.85);
+    /* Textos */
+    --color-text: #424242;
+    --color-text-heading: #071A25;
+    --color-text-primary: #0D0D0D;
+    --color-text-secondary: #545454;
+    --color-text-light: #F5F5F5;
+    --color-text-button: #FFE8E0;
+    --color-text-blue: #D3EAF8;
 
-    --color-date-background: rgba(217, 217, 217, 0.25);
-    --color-date-option: rgba(217, 217, 217, 0.35);
-    --color-date-text: rgba(217, 224, 235, 0.8);
-    --color-bg-main: rgb(35, 64, 179);
+    /* Identidade visual — marrom */
+    --color-brand: #442612;
+    --color-brand-dark: #321A0B;
+    --color-brand-light: #5D381F;
+    --color-brand-accent: #C7A289;
 
-    --color-shadow: rgba(0, 0, 0, 0.25);
-    --color-glass-border: rgba(255, 255, 255, 0.2);
+    /* Azul complementar */
+    --color-blue: #3C6781;
+    --color-blue-dark: #071A25;
 
-    --radius-input: 19px;
-    --radius-card: 41px;
-    --radius-header: 20px;
-    --radius-button: 19px;
+    /* Botões */
+    --color-button: #321A0B;
+    --color-button-gradient-start: #442612;
+    --color-button-gradient-end: #321A0B;
+    --color-button-border: #321A0B;
+    --color-button-text: #FFE8E0;
 
-    --blur-glass: 4px;
+    /* Inputs e bordas */
+    --color-input-background: #FFFFFF;
+    --color-input-border: #D1D1D1;
+    --color-border: #D1D1D1;
+
+    /* Feedback */
+    --color-success: #24C321;
+    --color-error: #DC2626;
+    --color-rating: #F3CD45;
+
+    /* Sombras */
+    --color-shadow: rgba(0, 0, 0, 0.1);
+    --color-shadow-strong: rgba(0, 0, 0, 0.25);
+
+    /* Bordas arredondadas */
+    --radius-input: 10px;
+    --radius-card: 10px;
+    --radius-header: 0px;
+    --radius-button: 10px;
+    --radius-small: 7px;
+
+    /* Efeitos */
+    --shadow-card: 0px 2px 32px rgba(0, 0, 0, 0.25);
+    --shadow-header: 0px 2px 10px rgba(0, 0, 0, 0.1);
 }

@@ -1,67 +1,150 @@
-import Header from "../components/Header";
 
+import Header from "../components/Header";
 import "./Home.css";
+
+const beneficios = [
+    {
+        icone: "/message.png",
+        titulo: "Escuta humanizada",
+        descricao: "Respostas empáticas e focadas no seu ritmo, sem julgamentos.",
+    },
+    {
+        icone: "/time.png",
+        titulo: "Acesso 24/7",
+        descricao: "Suporte e privacidade total a qualquer hora do dia ou da noite.",
+    },
+    {
+        icone: "/people.png",
+        titulo: "Ponte profissional",
+        descricao: "O impulso inicial para te preparar para a terapia.",
+    },
+    {
+        icone: "/gemini.png",
+        titulo: "Google Gemini",
+        descricao: "Tecnologia de ponta para conversas fluidas, rápidas e precisas.",
+    },
+];
 
 export default function Home() {
     return (
         <main className="home-main">
             <Header />
-            
+
+            {/* Seção principal */}
             <section className="home-hero">
-                {/* Botão de Destaque da IA */}
-                <div className="badge-container">
-
-                    <a href="https://gemini.google.com">
-                    <button className="gemini-badge">
-                        <img alt="Imagem do Gemini" aria-hidden="true" className="gemini-img" src="https://www.gstatic.com/lamda/images/gemini_sparkle_aurora_33f86dc0c0257da337c63.svg"></img>
-                        <span>Funciona com o Google Gemini</span>
-                    </button>
+                <div className="hero-content">
+                    <a
+                        href="https://gemini.google.com"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="gemini-badge"
+                    >
+                        <span className="gemini-symbol">✦</span>
+                        Funciona com o Google Gemini
                     </a>
+
+                    <div className="hero-text">
+                        <h1>
+                            Crie <span>Asas</span> para voar e retome o controle
+                            da sua <span>História.</span>
+                        </h1>
+
+                        <p>
+                            O Wings é a sua ponte segura entre o que você sente
+                            agora e a ajuda psicológica que você merece. Você
+                            não precisa enfrentar seus desafios sozinho.
+                        </p>
+                    </div>
+
+                    <div className="hero-buttons">
+                        <a href="/login" className="button-primary">
+                            Conheça nosso assistente
+                        </a>
+
+                        <a href="/profissionais" className="button-secondary">
+                            Procure Ajuda
+                        </a>
+                    </div>
                 </div>
 
-                {/* Título e Subtítulo */}
-                <div className="hero-text-container">
-                    <h1>
-                        Crie <span className="span-home">Asas</span> para voar e retome o controle da sua <span className="span-home">História.</span>
-                    </h1>
-                    <p>
-                        O Wings é a sua ponte segura entre o que você sente agora e a ajuda psicológica que você merece. Você não precisa enfrentar seus desafios sozinho.
-                    </p>
-                </div>
+                <div className="hero-image-container">
+                    <img
+                        src="/home.png"
+                        alt="Duas pessoas de mãos dadas"
+                        className="hero-image"
+                    />
 
-                {/* Caixa de Entrada / Prompt */}
-                <div className="prompt-container">
-                    <form action="" method="POST" className="prompt-form" onSubmit={(e) => e.preventDefault()}>
-                        <fieldset className="prompt-fieldset">
-                            <textarea
-                                name="prompt"
-                                id="prompt-ia"
-                                placeholder="Como você está se sentindo hoje? Tente desabafar..."
-                                rows={3}
-                                required
-                            ></textarea>
+                    <div className="professionals-card">
+                        <div className="rating-stars">★★★★★</div>
+                        <strong>
+                            50+ <span className="avatar-group">👥</span>
+                        </strong>
+                        <p>Profissionais qualificados disponíveis</p>
+                    </div>
 
-                            <div className="prompt-actions">
-                                <button type="button" className="action-btn-left" aria-label="Anexar">
-                                   <img src="/add.svg" alt="ícone de adicionar" />
-                                </button>
-                                <div className="action-btn-right-group">
-                                    <button type="button" className="action-btn" aria-label="Microfone">
-                                        <img src="/mic.svg" alt="ícone de microfone" />
-                                    </button>
-                                    <button type="submit" className="submit-btn" aria-label="Enviar">
-                                        <img src="/arrow.svg" alt="ícone de seta" />
-                                    </button>
-                                </div>
-                            </div>
-                        </fieldset>
-                    </form>
+                    <div className="hero-tag community-tag">
+                        <span>✓</span>
+                        Comunidade Acolhedora
+                    </div>
+
+                    <div className="hero-tag training-tag">
+                        <span>✓</span>
+                        IA Treinada por Profissionais
+                    </div>
                 </div>
             </section>
 
-            <footer className="home-footer">
-                O Wings é uma IA de apoio inicial e não substitui o acompanhamento psicológico. Em caso de crise, ligue 188 (CVV).
-            </footer>
+            {/* Seção sobre a inteligência artificial */}
+            <section className="home-ai-section">
+                <div className="phone-container">
+                    <img
+                        src="/mobile-home.png"
+                        alt="Prévia do aplicativo Wings em um celular"
+                        className="phone-image"
+                    />
+                </div>
+
+                <div className="ai-content">
+                    <span className="section-eyebrow">
+                        INTELIGÊNCIA ARTIFICIAL
+                    </span>
+
+                    <h2>Um apoio para recuperar sua autonomia.</h2>
+
+                    <p className="ai-description">
+                        Com inteligência artificial do Google Gemini, o
+                        assistente do Wings acolhe o que você sente e ajuda a
+                        organizar os próximos passos, no seu ritmo.
+                    </p>
+
+                    <div className="benefits-list">
+                        {beneficios.map((beneficio) => (
+                            <article
+                                className="benefit-item"
+                                key={beneficio.titulo}
+                            >
+                                <div className="benefit-icon">
+                                    <img src={beneficio.icone} alt="" />
+                                </div>
+
+                                <div className="benefit-text">
+                                    <h3>{beneficio.titulo}</h3>
+                                    <p>{beneficio.descricao}</p>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+
+                    <a href="/login" className="ai-button">
+                        Conheça nosso assistente
+                    </a>
+
+                    <small className="ai-disclaimer">
+                        A assistente não substitui atendimento profissional
+                        ou serviços de emergência.
+                    </small>
+                </div>
+            </section>
         </main>
     );
 }

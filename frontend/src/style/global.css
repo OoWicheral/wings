@@ -1,3 +1,4 @@
+
 @import "./variables.css";
 
 *, *::before, *::after {
@@ -12,9 +13,20 @@ html, body, #root {
 
 body {
     min-height: 100vh;
-    font-family: "Inter", sans-serif;
-    background: var(--color-bg-main);
+
+    font-family: var(--font-primary);
+    background: linear-gradient(
+            180deg,
+            var(--color-page-gradient-start) 0%,
+            var(--color-page-gradient-end) 100%
+    );
+
     color: var(--color-text);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color: var(--color-text-heading);
 }
 
 input, button, select, textarea {
