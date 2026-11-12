@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ChatAiMessage;
+use App\Http\Controllers\Api\PublicationController;
 
 /*
 Rotas Públicas (Sem necessidade de Token JWT)
@@ -28,5 +29,10 @@ Route::middleware('jwt')->group(function () {
     Route::apiResource('user', UserController::class)->except(['store']);
     //ChatAi
     Route::apiResource('chataimessage', ChatAiMessage::class);
+    //Postagens
+    Route::get('/posts', [PublicationController::class, 'index']);
+    Route::get('/posts/mine', [PublicationController::class, 'authUserPosts']);
+    Route::get('/posts/mine/{id_publicacao}', [PublicationController::class, 'authUserUniquePost']);
+    Route::get('/user/{id}/posts', [PublicationController::class, 'anyUserPosts']);
 });
 

@@ -57,4 +57,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(Profile::class, 'id_usuario', 'id_usuario');
     }
 
+    public function posts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Publication::class, 'id_usuario', 'id_usuario');
+    }
+
 }
