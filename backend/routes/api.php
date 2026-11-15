@@ -30,9 +30,12 @@ Route::middleware('jwt')->group(function () {
     //ChatAi
     Route::apiResource('chataimessage', ChatAiMessage::class);
     //Postagens
+    Route::post('/posts', [PublicationController::class, 'store']);
     Route::get('/posts', [PublicationController::class, 'index']);
     Route::get('/posts/mine', [PublicationController::class, 'authUserPosts']);
     Route::get('/posts/mine/{id_publicacao}', [PublicationController::class, 'authUserUniquePost']);
     Route::get('/user/{id}/posts', [PublicationController::class, 'anyUserPosts']);
+    Route::get('/posts/{id_publicacao}', [PublicationController::class, 'show']);
+    Route::match(['put', 'patch'], '/posts/{id_publicacao}', [PublicationController::class, 'update']);
 });
 

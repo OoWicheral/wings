@@ -6,7 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PublicationResource;
 use App\Models\Publication;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Requests\StorePublicationRequest;
+use App\Http\Requests\UpdatePublicationRequest;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class PublicationController extends Controller
 {
@@ -19,6 +23,13 @@ class PublicationController extends Controller
             ->paginate(15);
 
         return PublicationResource::collection($publications);
+    }
+
+    // GET api/posts/{id}
+    public function show($id_publicacao)
+    {
+        $publication = Publication::findOrFail($id_publicacao);
+        return new PublicationResource($publication);
     }
 
     // GET /api/posts/mine
@@ -51,48 +62,107 @@ class PublicationController extends Controller
         return new PublicationResource($publication);
     }
 
-    public function create()
+    // POST /api/posts
+    public function store(StorePublicationRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $imagePath = null;
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('publications', 'public');
+
+            if ($imagePath === false) {
+                abort(500, 'Não foi possível salvar a imagem da publicação.');
+            }
+        }
+
+        try {
+            $publication = DB::transaction(function () use ($validated, $imagePath) {
+                return Publication::create([
+                    'id_usuario' => auth()->id(),
+                    'titulo_publicacao' => $validated['title'],
+                    'conteudo_publicacao' => $validated['content'],
+                    'img_anexo' => $imagePath,
+                ]);
+            });
+        } catch (\Throwable $exception) {
+            if ($imagePath !== null) {
+                Storage::disk('public')->delete($imagePath);
+            }
+
+            throw $exception;
+        }
+
+        return response()->json([
+            'data' => new PublicationResource($publication),
+            'message' => 'Publicação criada com sucesso',
+        ], 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    // PUT / PATCH /api/posts
+    public function update(UpdatePublicationRequest $request, $id_publicacao)
     {
-        //
-    }
+        $publication = Publication::where('id_usuario', auth()->id())
+            ->findOrFail($id_publicacao);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Publication $publication)
-    {
-        //
-    }
+        $validated = $request->validated();
+        $data = [];
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Publication $publication)
-    {
-        //
-    }
+        $fieldMap = [
+            'title' => 'titulo_publicacao',
+            'content' => 'conteudo_publicacao',
+            'statusPost' => 'status_publicacao',
+        ];
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Publication $publication)
-    {
-        //
-    }
+        foreach ($fieldMap as $requestKey => $dbColumn) {
+            if (isset($validated[$requestKey])) {
+                $data[$dbColumn] = $validated[$requestKey];
+            }
+        }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Publication $publication)
-    {
-        //
+        $oldImagePath = $publication->img_anexo;
+        $newImagePath = null;
+
+        if ($request->hasFile('image')) {
+            $newImagePath = $request->file('image')->store('publications', 'public');
+
+            if ($newImagePath === false) {
+                abort(500, 'Não foi possível salvar a imagem da publicação.');
+            }
+
+            $data['img_anexo'] = $newImagePath;
+        }
+
+        try {
+            $saved = DB::transaction(function () use ($publication, $data) {
+                if (!empty($data)) {
+                    $publication->update($data);
+                }
+
+                return $publication->refresh();
+            });
+        } catch (\Throwable $exception) {
+            if ($newImagePath !== null && !Storage::disk('public')->delete($newImagePath)) {
+                Log::warning('Não foi possível remover a nova imagem após falha ao atualizar publicação.', [
+                    'publication_id' => $publication->id_publicacao,
+                    'image_path' => $newImagePath,
+                ]);
+            }
+
+            throw $exception;
+        }
+
+        if ($newImagePath !== null && $oldImagePath !== null
+            && !Storage::disk('public')->delete($oldImagePath)) {
+            Log::warning('Não foi possível remover a imagem antiga da publicação.', [
+                'publication_id' => $publication->id_publicacao,
+                'image_path' => $oldImagePath,
+            ]);
+        }
+
+        return response()->json([
+            'data' => new PublicationResource($saved),
+            'message' => 'Publicação atualizada com sucesso',
+        ], 200);
     }
 }

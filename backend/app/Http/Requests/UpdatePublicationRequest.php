@@ -15,10 +15,10 @@ class UpdatePublicationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'      => 'nullable|string|max:50',
-            'content'    => 'nullable|string|max:500',
-            'image'      => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'statusPost' => 'nullable|string|in:ativo,inativo',
+            'title'      => 'sometimes|required|string|max:50',
+            'content'    => 'sometimes|required|string|max:500',
+            'image'      => 'sometimes|nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'statusPost' => 'sometimes|required|string|in:ativo,inativo',
         ];
     }
 }
