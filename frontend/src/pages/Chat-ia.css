@@ -1,0 +1,912 @@
+/* =========================================================
+   TELA DO ASSISTENTE (CHAT IA)
+   Estrutura: sidebar à esquerda + área de conversa à direita.
+   Medidas baseadas no frame de 1920px do Figma.
+   ========================================================= */
+
+.chat-page {
+    --chat-sidebar-bg: #f7f7f7;
+    --chat-surface: #ffffff;
+    --chat-text: #3f3f3f;
+    --chat-text-strong: #333333;
+    --chat-text-muted: #8a8a8a;
+    --chat-border: #e9e9e9;
+    --chat-hover: #efefef;
+    --chat-active: #ededed;
+    --chat-accent: #d96a0b;
+    --chat-accent-dark: #c25a00;
+
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+
+    background: var(--chat-surface);
+    color: var(--chat-text);
+    font-family: var(--font-primary);
+}
+
+/*
+   :where() zera a especificidade destes resets.
+   Sem isso, ".chat-page button" venceria ".chat-composer-send"
+   e o botão de enviar perderia o fundo laranja e a seta branca.
+*/
+:where(.chat-page) button,
+:where(.chat-page) input,
+:where(.chat-page) textarea {
+    font: inherit;
+    color: inherit;
+}
+
+:where(.chat-page) button {
+    border: 0;
+    background: transparent;
+}
+
+.chat-page svg {
+    display: block;
+    flex-shrink: 0;
+}
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.chat-sidebar {
+    width: 420px;
+    flex-shrink: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 26px 24px 22px 48px;
+
+    background: var(--chat-sidebar-bg);
+    border-right: 1px solid var(--chat-border);
+    overflow: hidden;
+}
+
+/* Topo: logo + botão de recolher */
+
+.chat-sidebar-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-left: 14px;
+}
+
+.chat-logo {
+    min-width: 0;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    text-decoration: none;
+}
+
+.chat-logo-mark {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+
+    /* Deixa o mark do logo no laranja da marca (o SVG original é cinza). */
+    filter: brightness(0) saturate(100%) invert(38%) sepia(92%)
+        saturate(1184%) hue-rotate(2deg) brightness(93%) contrast(94%);
+}
+
+.chat-logo-text {
+    font-family: var(--font-heading);
+    font-size: 26px;
+    font-weight: 800;
+    font-style: italic;
+    letter-spacing: 0.2px;
+    line-height: 1;
+
+    color: #c25d0a;
+    white-space: nowrap;
+}
+
+.chat-collapse-button {
+    width: 40px;
+    height: 40px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 10px;
+    color: #3f3f3f;
+
+    transition: background 0.15s ease;
+}
+
+.chat-collapse-button:hover {
+    background: var(--chat-hover);
+}
+
+.chat-collapse-button svg {
+    width: 26px;
+    height: 26px;
+}
+
+/* Navegação principal */
+
+.chat-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    margin-top: 28px;
+    padding-left: 14px;
+}
+
+.chat-new-chat,
+.chat-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    width: 100%;
+    min-height: 50px;
+    padding: 4px 10px;
+
+    border-radius: 10px;
+
+    font-size: 27px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: left;
+    text-decoration: none;
+
+    color: var(--chat-text);
+
+    transition: background 0.15s ease;
+}
+
+.chat-new-chat {
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.chat-new-chat:hover,
+.chat-nav-item:hover {
+    background: var(--chat-hover);
+}
+
+.chat-new-chat svg,
+.chat-nav-item svg {
+    width: 30px;
+    height: 30px;
+}
+
+/* Busca */
+
+.chat-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    height: 58px;
+    margin-top: 26px;
+    padding: 0 16px;
+
+    border: 1px solid #e4e4e4;
+    border-radius: 14px;
+
+    background: #f0f0f0;
+    color: #8a8a8a;
+}
+
+.chat-search svg {
+    width: 24px;
+    height: 24px;
+}
+
+.chat-search input {
+    width: 100%;
+    min-width: 0;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+
+    font-size: 21px;
+    color: #555555;
+}
+
+.chat-search input::placeholder {
+    color: #9a9a9a;
+}
+
+.chat-search input::-webkit-search-cancel-button {
+    display: none;
+}
+
+/* Histórico de conversas */
+
+.chat-history {
+    flex: 1;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    margin-top: 20px;
+}
+
+.chat-history-title {
+    margin: 0 0 6px;
+    padding-left: 14px;
+
+    font-size: 17px;
+    font-weight: 400;
+    color: #7e7e7e;
+}
+
+.chat-history-list {
+    flex: 1;
+    min-height: 0;
+
+    overflow-y: auto;
+    padding-right: 4px;
+
+    scrollbar-width: thin;
+    scrollbar-color: #9a9a9a transparent;
+}
+
+.chat-history-list::-webkit-scrollbar {
+    width: 7px;
+}
+
+.chat-history-list::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: #9a9a9a;
+}
+
+.chat-history-item {
+    display: block;
+
+    width: 100%;
+    padding: 9px 14px;
+
+    border-radius: 12px;
+
+    font-size: 22px;
+    line-height: 1.3;
+    text-align: left;
+
+    color: #444444;
+
+    transition: background 0.15s ease;
+}
+
+.chat-history-item:hover {
+    background: var(--chat-hover);
+}
+
+.chat-history-item--active {
+    background: var(--chat-active);
+}
+
+/* Usuário no rodapé da sidebar */
+
+.chat-user {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    margin-top: 18px;
+    padding-top: 4px;
+}
+
+.chat-user-avatar {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+    background: #555555;
+    color: #ffffff;
+}
+
+.chat-user-avatar svg {
+    width: 28px;
+    height: 28px;
+}
+
+.chat-user-name {
+    overflow: hidden;
+
+    font-size: 22px;
+    color: #444444;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   SIDEBAR RECOLHIDA
+   ========================================================= */
+
+.chat-sidebar--collapsed {
+    width: 92px;
+    align-items: center;
+    padding: 22px 0;
+}
+
+.chat-sidebar--collapsed .chat-sidebar-top {
+    width: 100%;
+    justify-content: center;
+    padding-left: 0;
+}
+
+.chat-sidebar--collapsed .chat-logo {
+    justify-content: center;
+
+    width: 54px;
+    height: 54px;
+
+    border: 1px solid #e5e5e5;
+    border-radius: 50%;
+    background: #ffffff;
+}
+
+.chat-sidebar--collapsed .chat-logo-mark {
+    width: 40px;
+    height: 40px;
+}
+
+.chat-sidebar--collapsed .chat-logo-text,
+.chat-sidebar--collapsed .chat-collapse-button,
+.chat-sidebar--collapsed .chat-search,
+.chat-sidebar--collapsed .chat-history,
+.chat-sidebar--collapsed .chat-nav-label,
+.chat-sidebar--collapsed .chat-user-name {
+    display: none;
+}
+
+.chat-sidebar--collapsed .chat-nav {
+    width: 100%;
+    align-items: center;
+    gap: 18px;
+
+    margin-top: 24px;
+    padding-left: 0;
+}
+
+.chat-sidebar--collapsed .chat-new-chat,
+.chat-sidebar--collapsed .chat-nav-item {
+    width: 52px;
+    min-height: 52px;
+    justify-content: center;
+    padding: 0;
+}
+
+.chat-sidebar--collapsed .chat-new-chat {
+    margin-bottom: 0;
+}
+
+.chat-sidebar--collapsed .chat-new-chat svg,
+.chat-sidebar--collapsed .chat-nav-item svg {
+    width: 28px;
+    height: 28px;
+}
+
+.chat-sidebar--collapsed .chat-user {
+    justify-content: center;
+    margin-top: auto;
+}
+
+/* =========================================================
+   ÁREA PRINCIPAL
+   ========================================================= */
+
+.chat-main {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    background: var(--chat-surface);
+    overflow: hidden;
+}
+
+/* Estado vazio: “Pronto para te ouvir.” + input centralizado */
+
+.chat-empty {
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 42px;
+
+    padding: 40px 48px 10vh;
+}
+
+.chat-empty-title {
+    margin: 0;
+
+    font-family: var(--font-primary);
+    font-size: clamp(32px, 2.6vw, 46px);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    text-align: center;
+
+    color: #3d3d3d;
+}
+
+/* =========================================================
+   ESTADO COM MENSAGENS
+   ========================================================= */
+
+.chat-thread {
+    flex: 1;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+
+    overflow-y: auto;
+    padding: 28px 96px 20px;
+
+    scrollbar-width: thin;
+    scrollbar-color: #cfcfcf transparent;
+}
+
+.chat-thread::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-thread::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: #cfcfcf;
+}
+
+.chat-message {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.chat-message--user {
+    align-items: flex-end;
+}
+
+.chat-message--assistant {
+    align-items: flex-start;
+}
+
+.chat-user-bubble {
+    max-width: 540px;
+    padding: 22px 30px;
+
+    border-radius: 22px;
+    background: var(--chat-surface);
+    box-shadow:
+        0 16px 36px rgba(0, 0, 0, 0.14),
+        0 2px 7px rgba(0, 0, 0, 0.05);
+
+    font-size: 23px;
+    line-height: 1.35;
+    color: #3d3d3d;
+    overflow-wrap: anywhere;
+}
+
+.chat-assistant-text {
+    max-width: 1020px;
+    margin: 0;
+
+    font-size: 23px;
+    line-height: 1.4;
+    color: #3d3d3d;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.chat-message-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-top: 10px;
+    color: #5b5b5b;
+}
+
+.chat-message-actions button {
+    width: 30px;
+    height: 30px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 7px;
+
+    transition: background 0.15s ease;
+}
+
+.chat-message-actions button:hover {
+    background: #f1f1f1;
+}
+
+.chat-message-actions svg {
+    width: 21px;
+    height: 21px;
+}
+
+.chat-composer-area {
+    flex-shrink: 0;
+
+    display: flex;
+    justify-content: center;
+
+    padding: 12px 96px 34px;
+}
+
+/* =========================================================
+   COMPOSER (CAMPO DE MENSAGEM)
+   ========================================================= */
+
+.chat-composer {
+    width: min(1080px, 100%);
+    min-height: 86px;
+
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    padding: 0 22px;
+
+    border-radius: 22px;
+    background: var(--chat-surface);
+    box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.16),
+        0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.chat-composer:focus-within {
+    box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.18),
+        0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.chat-composer-add {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+    color: #3d3d3d;
+
+    transition: background 0.15s ease;
+}
+
+.chat-composer-add:hover {
+    background: #f2f2f2;
+}
+
+.chat-composer-add svg {
+    width: 27px;
+    height: 27px;
+}
+
+.chat-composer-input {
+    flex: 1;
+    min-width: 0;
+
+    height: 52px;
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+
+    font-size: 23px;
+    color: #3d3d3d;
+}
+
+.chat-composer-input::placeholder {
+    color: #8b8b8b;
+}
+
+.chat-composer-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.chat-composer-mic {
+    width: 38px;
+    height: 38px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+    color: #4b4b4b;
+
+    transition: background 0.15s ease;
+}
+
+.chat-composer-mic:hover {
+    background: #f2f2f2;
+}
+
+.chat-composer-mic svg {
+    width: 24px;
+    height: 24px;
+}
+
+.chat-composer-send {
+    width: 46px;
+    height: 46px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+    background: var(--chat-accent);
+    color: #ffffff;
+
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease;
+}
+
+.chat-composer-send:hover {
+    background: var(--chat-accent-dark);
+    transform: translateY(-1px);
+}
+
+.chat-composer-send svg {
+    width: 23px;
+    height: 23px;
+}
+
+/* Variante com várias linhas (estado de conversa) */
+
+.chat-composer--multiline {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+
+    min-height: 190px;
+    padding: 24px 22px 14px;
+}
+
+.chat-composer-textarea {
+    width: 100%;
+    min-height: 96px;
+    padding: 0;
+
+    border: 0;
+    outline: 0;
+    resize: none;
+
+    background: transparent;
+
+    font-size: 23px;
+    line-height: 1.35;
+    color: #3d3d3d;
+}
+
+.chat-composer-textarea::placeholder {
+    color: #8b8b8b;
+}
+
+.chat-composer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.chat-composer--multiline .chat-composer-actions {
+    margin-left: auto;
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 1280px) {
+    .chat-sidebar {
+        width: 340px;
+        padding-left: 32px;
+    }
+
+    .chat-new-chat,
+    .chat-nav-item {
+        font-size: 23px;
+    }
+
+    .chat-new-chat svg,
+    .chat-nav-item svg {
+        width: 26px;
+        height: 26px;
+    }
+
+    .chat-search input {
+        font-size: 18px;
+    }
+
+    .chat-history-item {
+        font-size: 19px;
+    }
+
+    .chat-user-name {
+        font-size: 19px;
+    }
+
+    .chat-thread,
+    .chat-composer-area {
+        padding-left: 48px;
+        padding-right: 48px;
+    }
+
+    .chat-user-bubble,
+    .chat-assistant-text {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 920px) {
+    /* Nesta largura a sidebar vira a versão recolhida do Figma. */
+    .chat-sidebar {
+        width: 92px;
+        align-items: center;
+        padding: 22px 0;
+    }
+
+    .chat-sidebar .chat-sidebar-top {
+        width: 100%;
+        justify-content: center;
+        padding-left: 0;
+    }
+
+    .chat-sidebar .chat-logo {
+        justify-content: center;
+
+        width: 54px;
+        height: 54px;
+
+        border: 1px solid #e5e5e5;
+        border-radius: 50%;
+        background: #ffffff;
+    }
+
+    .chat-sidebar .chat-logo-mark {
+        width: 40px;
+        height: 40px;
+    }
+
+    .chat-sidebar .chat-logo-text,
+    .chat-sidebar .chat-collapse-button,
+    .chat-sidebar .chat-search,
+    .chat-sidebar .chat-history,
+    .chat-sidebar .chat-nav-label,
+    .chat-sidebar .chat-user-name {
+        display: none;
+    }
+
+    .chat-sidebar .chat-nav {
+        width: 100%;
+        align-items: center;
+        gap: 18px;
+
+        margin-top: 24px;
+        padding-left: 0;
+    }
+
+    .chat-sidebar .chat-new-chat,
+    .chat-sidebar .chat-nav-item {
+        width: 52px;
+        min-height: 52px;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .chat-sidebar .chat-new-chat {
+        margin-bottom: 0;
+    }
+
+    .chat-sidebar .chat-new-chat svg,
+    .chat-sidebar .chat-nav-item svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .chat-sidebar .chat-user {
+        justify-content: center;
+        margin-top: auto;
+    }
+}
+
+@media (max-width: 700px) {
+    .chat-empty {
+        gap: 28px;
+        padding: 24px 20px 8vh;
+    }
+
+    .chat-empty-title {
+        font-size: 30px;
+    }
+
+    .chat-thread {
+        gap: 24px;
+        padding: 20px 20px 12px;
+    }
+
+    .chat-composer-area {
+        padding: 8px 20px 20px;
+    }
+
+    .chat-user-bubble {
+        max-width: 100%;
+        padding: 16px 20px;
+        font-size: 17px;
+    }
+
+    .chat-assistant-text {
+        font-size: 17px;
+    }
+
+    .chat-message-actions svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .chat-composer {
+        min-height: 72px;
+        padding: 0 16px;
+        gap: 12px;
+    }
+
+    .chat-composer-input {
+        height: 44px;
+        font-size: 17px;
+    }
+
+    .chat-composer-add svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .chat-composer-mic svg {
+        width: 21px;
+        height: 21px;
+    }
+
+    .chat-composer-send {
+        width: 40px;
+        height: 40px;
+    }
+
+    .chat-composer-send svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .chat-composer--multiline {
+        min-height: 164px;
+        padding: 18px 16px 12px;
+    }
+
+    .chat-composer-textarea {
+        min-height: 78px;
+        font-size: 17px;
+    }
+}
