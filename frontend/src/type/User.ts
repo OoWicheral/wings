@@ -1,13 +1,18 @@
     export interface User {
-        id: number,
-        name: string,
-        email: string,
-        password: string,
-        dateNasc: Date,
-        tel: string
+        id: number;
+        name: string;
+        email: string;
+        date: string;    // "1998-05-12"
+        tel: string[];   // ["5511999999999"]
     }
 
-    export type UserCreate = Omit<User, "id">;
+    export interface UserCreate {
+        name: string;
+        email: string;
+        password: string;
+        dateNasc: Date;
+        tel: string;
+    }
 
     export type LoginCredentials = Pick<User, "email"> & {
         password: string;

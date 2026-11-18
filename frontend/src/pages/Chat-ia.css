@@ -300,6 +300,14 @@
 
     margin-top: 18px;
     padding-top: 4px;
+
+    border-radius: 14px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.chat-user:hover {
+    background: var(--chat-hover);
 }
 
 .chat-user-avatar {

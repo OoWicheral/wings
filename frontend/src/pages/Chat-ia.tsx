@@ -442,12 +442,16 @@ export default function ChatIA() {
                     </div>
                 </div>
 
-                <div className="chat-user">
+                <Link
+                    to="/perfil"
+                    className="chat-user"
+                    aria-label="Abrir meu perfil"
+                >
                     <span className="chat-user-avatar">
                         <IconUser />
                     </span>
                     <span className="chat-user-name">Nome usuário</span>
-                </div>
+                </Link>
             </aside>
 
             <main

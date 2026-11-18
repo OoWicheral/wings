@@ -4,6 +4,7 @@ import SignUp from './pages/Sign-up.tsx';
 import SignOn from "./pages/Sign-on.tsx";
 import Home from './pages/Home.tsx';
 import ChatIA from './pages/Chat-ia.tsx';
+import Profile from './pages/Profile.tsx';
 
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
             <Route path="/cadastro" element={<SignUp />} />
             <Route path="/login" element={<SignOn />} />
             <Route path="/chat" element={<ChatIA />} />
+            <Route path="/perfil" element={<Profile />} />
             <Route path="/app" element={<App/>} />
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
