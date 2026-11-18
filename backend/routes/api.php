@@ -1,11 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ChatAiMessage;
+use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\PublicationController;
+use App\Http\Controllers\Api\UserController;
+use Illuminate\Support\Facades\Route;
 
 /*
 Rotas Públicas (Sem necessidade de Token JWT)
@@ -30,9 +31,9 @@ Route::middleware('jwt')->group(function () {
     Route::match(['put', 'patch'], '/user/{id}/profile', [ProfileController::class, 'update']);
     // Usuários (Listar, Visualizar, Atualizar, Deletar)
     Route::apiResource('user', UserController::class)->except(['store']);
-    //ChatAi
+    // ChatAi
     Route::apiResource('chataimessage', ChatAiMessage::class);
-    //Postagens
+    // Postagens
     Route::post('/posts', [PublicationController::class, 'store']);
     Route::get('/posts', [PublicationController::class, 'index']);
     Route::get('/posts/mine', [PublicationController::class, 'authUserPosts']);
@@ -40,5 +41,7 @@ Route::middleware('jwt')->group(function () {
     Route::get('/user/{id}/posts', [PublicationController::class, 'anyUserPosts']);
     Route::get('/posts/{id_publicacao}', [PublicationController::class, 'show']);
     Route::match(['put', 'patch'], '/posts/{id_publicacao}', [PublicationController::class, 'update']);
+    Route::get('/posts/{id_publicacao}/comments', [CommentController::class, 'index']);
+    Route::post('/posts/{id_publicacao}/comments', [CommentController::class, 'store']);
+    Route::get('/posts/{id_publicacao}/comments/{id_comentario}', [CommentController::class, 'show']);
 });
-

@@ -20,7 +20,7 @@ class PublicationController extends Controller
     {
         $publications = Publication::orderByDesc('criado_em')
             ->orderByDesc('id_publicacao')
-            ->paginate(15);
+            ->cursorPaginate(15);
 
         return PublicationResource::collection($publications);
     }
