@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Api;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -16,7 +16,7 @@ class UpdateProfileRequest extends FormRequest
         return [
             'nameProfile'   => 'nullable|string|max:255',
             'bio'           => 'nullable|string|max:500',
-            'avatar'        => 'nullable|string', 
+            'avatar'        => 'nullable|string',
             'statusProfile' => 'nullable|string|in:ativo,inativo',
         ];
     }

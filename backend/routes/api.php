@@ -26,7 +26,7 @@ Route::middleware('jwt')->group(function () {
     Route::get('auth/me', [AuthController::class, 'me']);
     // Perfil
     Route::get('/user/{id}/profile', [ProfileController::class, 'show']);
-    Route::get('/user/{id}/profile', [ProfileController::class, 'store']);
+    Route::post('/user/{id}/profile', [ProfileController::class, 'store']);
     Route::match(['put', 'patch'], '/user/{id}/profile', [ProfileController::class, 'update']);
     // Usuários (Listar, Visualizar, Atualizar, Deletar)
     Route::apiResource('user', UserController::class)->except(['store']);

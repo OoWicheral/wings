@@ -7,6 +7,8 @@ use App\Models\Profile;
 use App\Http\Resources\ProfileResource;
 use App\Http\Requests\UpdateProfileRequest;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\StoreProfileRequest;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -29,7 +31,7 @@ class ProfileController extends Controller
 
     //POST /api/user/{id}/profile
     public function store(StoreProfileRequest $request, $id) {
-        
+
         User::findOrFail($id);
 
         $exists = Profile::where('id_usuario', $id)->exists();
