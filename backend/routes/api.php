@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ChatAiMessage;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\PublicationController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,8 +42,16 @@ Route::middleware('jwt')->group(function () {
     Route::get('/user/{id}/posts', [PublicationController::class, 'anyUserPosts']);
     Route::get('/posts/{id_publicacao}', [PublicationController::class, 'show']);
     Route::match(['put', 'patch'], '/posts/{id_publicacao}', [PublicationController::class, 'update']);
+    // Comentários
     Route::get('/posts/{id_publicacao}/comments', [CommentController::class, 'index']);
     Route::post('/posts/{id_publicacao}/comments', [CommentController::class, 'store']);
     Route::get('/posts/{id_publicacao}/comments/{id_comentario}', [CommentController::class, 'show']);
     Route::match(['put', 'patch'], '/posts/{id_publicacao}/comments/{id_comentario}', [CommentController::class, 'update']);
+    // Denúncias
+    Route::get('/reports/mine', [ReportController::class, 'authUserReports']);
+    Route::get('/reports', [ReportController::class, 'index']);
+    Route::get('/reports/{id_denuncia}', [ReportController::class, 'show']);
+    Route::post('/reports', [ReportController::class, 'store']);
+    Route::match(['put', 'patch'], '/reports/{id_denuncia}', [ReportController::class, 'update']);
+    Route::get('/user/{id}/reports', [ReportController::class, 'anyUserReports']);
 });
