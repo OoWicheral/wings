@@ -44,4 +44,5 @@ Route::middleware('jwt')->group(function () {
     Route::get('/posts/{id_publicacao}/comments', [CommentController::class, 'index']);
     Route::post('/posts/{id_publicacao}/comments', [CommentController::class, 'store']);
     Route::get('/posts/{id_publicacao}/comments/{id_comentario}', [CommentController::class, 'show']);
+    Route::match(['put', 'patch'], '/posts/{id_publicacao}/comments/{id_comentario}', [CommentController::class, 'update']);
 });

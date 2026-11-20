@@ -99,7 +99,7 @@ class PublicationController extends Controller
         ], 201);
     }
 
-    // PUT / PATCH /api/posts
+    // PUT / PATCH /api/posts/{id_publicacao}
     public function update(UpdatePublicationRequest $request, $id_publicacao)
     {
         $publication = Publication::where('id_usuario', auth()->id())
