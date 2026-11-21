@@ -173,4 +173,28 @@ class PublicationController extends Controller
             'message' => 'Publicação atualizada com sucesso',
         ], 200);
     }
+
+    // DELETE /api/posts/{id_publicacao}
+    public function destroy($id_publicacao)
+    {
+        $publication = Publication::where('id_usuario', auth()->id())
+            ->findOrFail($id_publicacao);
+
+        $imagePath = $publication->img_anexo;
+        DB::transaction(function () use ($publication) {
+            $publication->comments()->delete();
+            $publication->delete();
+        });
+
+        if ($imagePath !== null && !Storage::disk('public')->delete($imagePath)) {
+            Log::warning('Não foi possível remover a imagem da publicação excluída.', [
+                'publication_id' => $publication->id_publicacao,
+                'image_path' => $imagePath,
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Publicação excluída com sucesso',
+        ], 200);
+    }
 }

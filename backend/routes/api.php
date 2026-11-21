@@ -42,6 +42,7 @@ Route::middleware('jwt')->group(function () {
     Route::get('/user/{id}/posts', [PublicationController::class, 'anyUserPosts']);
     Route::get('/posts/{id_publicacao}', [PublicationController::class, 'show']);
     Route::match(['put', 'patch'], '/posts/{id_publicacao}', [PublicationController::class, 'update']);
+    Route::delete('/posts/{id_publicacao}', [PublicationController::class, 'destroy']);
     // Comentários
     Route::get('/posts/{id_publicacao}/comments', [CommentController::class, 'index']);
     Route::post('/posts/{id_publicacao}/comments', [CommentController::class, 'store']);
