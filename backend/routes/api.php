@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatAiMessage;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\ProfessionalController;
 use App\Http\Controllers\Api\PublicationController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\UserController;
@@ -30,6 +31,11 @@ Route::middleware('jwt')->group(function () {
     Route::get('/user/{id}/profile', [ProfileController::class, 'show']);
     Route::post('/user/{id}/profile', [ProfileController::class, 'store']);
     Route::match(['put', 'patch'], '/user/{id}/profile', [ProfileController::class, 'update']);
+    // Profissionais
+    Route::get('/professionals', [ProfessionalController::class, 'index']);
+    Route::get('/user/{id}/professional', [ProfessionalController::class, 'show']);
+    Route::post('/user/{id}/professional', [ProfessionalController::class, 'store']);
+    Route::match(['put', 'patch'], '/user/{id}/professional', [ProfessionalController::class, 'update']);
     // Usuários (Listar, Visualizar, Atualizar, Deletar)
     Route::apiResource('user', UserController::class)->except(['store']);
     // ChatAi
