@@ -12,6 +12,9 @@ class CommentResource extends JsonResource
         return [
             'id' => $this->id_comentario,
             'userId' => $this->id_usuario,
+            'author' => $this->relationLoaded('user') && $this->user
+                ? new AuthorResource($this->user)
+                : null,
             'postId' => $this->id_publicacao,
             'content' => $this->conteudo_comentario,
             'createdAt' => $this->criado_em,

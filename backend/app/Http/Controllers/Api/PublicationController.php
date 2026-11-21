@@ -18,7 +18,8 @@ class PublicationController extends Controller
     // GET /api/posts
     public function index()
     {
-        $publications = Publication::orderByDesc('criado_em')
+        $publications = Publication::with('user.profile')
+            ->orderByDesc('criado_em')
             ->orderByDesc('id_publicacao')
             ->cursorPaginate(15);
 
@@ -28,14 +29,15 @@ class PublicationController extends Controller
     // GET api/posts/{id}
     public function show($id_publicacao)
     {
-        $publication = Publication::findOrFail($id_publicacao);
+        $publication = Publication::with('user.profile')->findOrFail($id_publicacao);
         return new PublicationResource($publication);
     }
 
     // GET /api/posts/mine
     public function authUserPosts()
     {
-        $publications = Publication::where('id_usuario', auth()->id())
+        $publications = Publication::with('user.profile')
+            ->where('id_usuario', auth()->id())
             ->latest('criado_em')
             ->paginate(15);
 
@@ -48,14 +50,18 @@ class PublicationController extends Controller
         $user = User::findOrFail($id);
 
         return PublicationResource::collection(
-            $user->posts()->latest('criado_em')->paginate(15)
+            $user->posts()
+                ->with('user.profile')
+                ->latest('criado_em')
+                ->paginate(15)
         );
     }
 
     // GET /api/posts/mine/{id_publicacao}
     public function authUserUniquePost($id_publicacao)
     {
-        $publication = Publication::where('id_usuario', auth()->id())
+        $publication = Publication::with('user.profile')
+            ->where('id_usuario', auth()->id())
             ->where('id_publicacao', $id_publicacao)
             ->firstOrFail();
 
@@ -85,6 +91,7 @@ class PublicationController extends Controller
                     'img_anexo' => $imagePath,
                 ]);
             });
+            $publication->load('user.profile');
         } catch (\Throwable $exception) {
             if ($imagePath !== null) {
                 Storage::disk('public')->delete($imagePath);
@@ -141,6 +148,7 @@ class PublicationController extends Controller
 
                 return $publication->refresh();
             });
+            $saved->load('user.profile');
         } catch (\Throwable $exception) {
             if ($newImagePath !== null && !Storage::disk('public')->delete($newImagePath)) {
                 Log::warning('Não foi possível remover a nova imagem após falha ao atualizar publicação.', [

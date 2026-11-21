@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Publication extends Model
 {
@@ -23,6 +24,6 @@ class Publication extends Model
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(Publication::class, 'id_usuario', 'id_usuario');
+        return $this->belongsTo(User::class, 'id_usuario', 'id_usuario');
     }
 }

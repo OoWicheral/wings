@@ -13,6 +13,9 @@ class PublicationResource extends JsonResource
         return [
             'id' => $this->id_publicacao,
             'userId' => $this->id_usuario,
+            'author' => $this->relationLoaded('user') && $this->user
+                ? new AuthorResource($this->user)
+                : null,
             'title' => $this->titulo_publicacao,
             'content' => $this->conteudo_publicacao,
             'image' => $this->img_anexo
@@ -20,6 +23,7 @@ class PublicationResource extends JsonResource
                 : null,
             'createdAt' => $this->criado_em,
             'updatedAt' => $this->modificado_em,
+            'statusPost' => $this->status_publicacao,
         ];
     }
 }

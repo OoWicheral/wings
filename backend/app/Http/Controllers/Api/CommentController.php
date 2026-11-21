@@ -17,7 +17,8 @@ class CommentController extends Controller
     {
         $publication = Publication::findOrFail($id_publicacao);
 
-        $comments = Comment::where('id_publicacao', $publication->id_publicacao)
+        $comments = Comment::with('user.profile')
+            ->where('id_publicacao', $publication->id_publicacao)
             ->orderByDesc('criado_em')
             ->orderByDesc('id_comentario')
             ->cursorPaginate(15);
@@ -29,7 +30,8 @@ class CommentController extends Controller
     public function show($id_publicacao, $id_comentario)
     {
         $publication = Publication::findOrFail($id_publicacao);
-        $comment = Comment::where('id_publicacao', $publication->id_publicacao)
+        $comment = Comment::with('user.profile')
+            ->where('id_publicacao', $publication->id_publicacao)
             ->findOrFail($id_comentario);
 
         return new CommentResource($comment);
@@ -46,6 +48,7 @@ class CommentController extends Controller
             'id_usuario' => auth()->id(),
             'id_publicacao' => $publication->id_publicacao,
         ]);
+        $comment->load('user.profile');
 
         return response()->json([
             'data' => new CommentResource($comment),
@@ -57,7 +60,8 @@ class CommentController extends Controller
     public function update(UpdateCommentRequest $request, $id_publicacao, $id_comentario)
     {
         $publication = Publication::findOrFail($id_publicacao);
-        $comment = Comment::where('id_publicacao', $publication->id_publicacao)
+        $comment = Comment::with('user.profile')
+            ->where('id_publicacao', $publication->id_publicacao)
             ->where('id_usuario', auth()->id())
             ->findOrFail($id_comentario);
 
