@@ -2,6 +2,8 @@ import { ApiError, apiFetch } from "./api";
 import type {
     AuthorSummary,
     FeedPage,
+    Professional,
+    ProfessionalPage,
     Publication,
     PublicationCreate,
 } from "../type/Community";
@@ -22,10 +24,9 @@ export async function createPost(payload: PublicationCreate): Promise<Publicatio
 }
 
 
-
 const authorCache = new Map<number, AuthorSummary>();
 
-async function getAuthor(userId: number): Promise<AuthorSummary> {
+export async function getAuthor(userId: number): Promise<AuthorSummary> {
     const cached = authorCache.get(userId);
     if (cached) return cached;
 
@@ -43,7 +44,7 @@ async function getAuthor(userId: number): Promise<AuthorSummary> {
         authorCache.set(userId, author);
         return author;
     } catch (error) {
-
+        // 404 = usuário sem perfil. Cai no fallback abaixo.
         if (!(error instanceof ApiError) || error.status !== 404) {
             throw error;
         }
@@ -61,18 +62,11 @@ async function getAuthor(userId: number): Promise<AuthorSummary> {
     return author;
 }
 
+/* =========================================================
+   PROFISSIONAIS
+   ========================================================= */
 
-export async function getAuthors(ids: number[]): Promise<Record<number, AuthorSummary>> {
-    const uniqueIds = [...new Set(ids)];
-    const results = await Promise.allSettled(uniqueIds.map((id) => getAuthor(id)));
-
-    const authors: Record<number, AuthorSummary> = {};
-
-    for (const result of results) {
-        if (result.status === "fulfilled") {
-            authors[result.value.userId] = result.value;
-        }
-    }
-
-    return authors;
+export async function getProfessionals(): Promise<Professional[]> {
+    const res = await apiFetch<ProfessionalPage>("/api/professionals");
+    return res.data;
 }

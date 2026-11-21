@@ -4,13 +4,16 @@ import type { FormEvent } from "react";
 import AppSidebar from "../components/AppSidebar";
 import { useAuth } from "../hooks/use-auth";
 import { ApiError } from "../service/api";
-import { createPost, getAuthors, getFeed } from "../service/community";
+import { createPost, getAuthor, getFeed, getProfessionals } from "../service/community";
 import { avatarUrl, formatRelativeTime } from "../utils/format";
-import type { AuthorSummary, Publication } from "../type/Community";
+import type { Publication } from "../type/Community";
 
 import "./Community.css";
 
+
+
 type FeedStatus = "loading" | "ready" | "error";
+
 
 const USE_DEMO_FEED = false;
 
@@ -18,33 +21,38 @@ const DEMO_POSTS: Publication[] = [
     {
         id: 2,
         userId: 2,
+        author: { userId: 2, name: "Marina Alves", avatar: null },
         title: "Um passo de cada vez",
         content: "Ai que não sei oq não sei oq la hahaha",
         image: null,
         createdAt: "2026-11-20T10:45:00",
         updatedAt: "2026-11-20T10:45:00",
+        statusPost: "ativo",
     },
     {
         id: 1,
         userId: 1,
+        author: { userId: 1, name: "Marco Rubio", avatar: null },
         title: "Primeira semana",
         content: "Ai que não sei oq não sei oq la",
         image: null,
         createdAt: "2026-11-20T10:10:00",
         updatedAt: "2026-11-20T10:10:00",
+        statusPost: "ativo",
     },
 ];
 
-const DEMO_AUTHORS: Record<number, AuthorSummary> = {
-    1: { userId: 1, name: "Marco Rubio", avatar: null },
-    2: { userId: 2, name: "Marina Alves", avatar: null },
-};
+interface ProfessionalCard {
+    id: number;
+    name: string;
+    avatar: string | null;
+    registration: string | null;
+}
 
-
-const DEMO_PROFESSIONALS = [
-    { id: 1, name: "Profissional", specialty: "Psicólogo" },
-    { id: 2, name: "Profissional", specialty: "Psicólogo" },
-    { id: 3, name: "Profissional", specialty: "Psicólogo" },
+const DEMO_PROFESSIONALS: ProfessionalCard[] = [
+    { id: 1, name: "Profissional", avatar: null, registration: null },
+    { id: 2, name: "Profissional", avatar: null, registration: null },
+    { id: 3, name: "Profissional", avatar: null, registration: null },
 ];
 
 function IconSearch() {
@@ -105,12 +113,13 @@ export default function Community() {
 
     const [status, setStatus] = useState<FeedStatus>("loading");
     const [posts, setPosts] = useState<Publication[]>([]);
-    const [authors, setAuthors] = useState<Record<number, AuthorSummary>>({});
     const [nextCursor, setNextCursor] = useState<string | null>(null);
 
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [reloadToken, setReloadToken] = useState(0);
+
+    const [professionals, setProfessionals] = useState<ProfessionalCard[]>([]);
 
     // Composer
     const [title, setTitle] = useState("");
@@ -118,10 +127,10 @@ export default function Community() {
     const [isPublishing, setIsPublishing] = useState(false);
     const [publishError, setPublishError] = useState("");
 
+
     useEffect(() => {
         if (USE_DEMO_FEED) {
             setPosts(DEMO_POSTS);
-            setAuthors(DEMO_AUTHORS);
             setNextCursor(null);
             setStatus("ready");
             return;
@@ -138,12 +147,6 @@ export default function Community() {
                 setPosts(page.data);
                 setNextCursor(page.next_cursor);
                 setStatus("ready");
-
-
-                const authorMap = await getAuthors(page.data.map((post) => post.userId));
-                if (cancelled) return;
-
-                setAuthors((prev) => ({ ...prev, ...authorMap }));
             } catch (error) {
                 if (cancelled) return;
 
@@ -166,6 +169,60 @@ export default function Community() {
         };
     }, [reloadToken]);
 
+    /* ---------- Profissionais do banner ---------- */
+
+    useEffect(() => {
+        if (USE_DEMO_FEED) {
+            setProfessionals(DEMO_PROFESSIONALS);
+            return;
+        }
+
+        let cancelled = false;
+
+        void (async () => {
+            try {
+                const list = await getProfessionals();
+                const firstThree = list.slice(0, 3);
+
+                const cards = await Promise.all(
+                    firstThree.map(async (professional) => {
+                        const registration =
+                            professional.crpRegion && professional.crpNumber
+                                ? `CRP ${professional.crpRegion}/${professional.crpNumber}`
+                                : null;
+
+                        try {
+                            const author = await getAuthor(professional.id);
+
+                            return {
+                                id: professional.id,
+                                name: author.name,
+                                avatar: author.avatar,
+                                registration,
+                            };
+                        } catch {
+                            return {
+                                id: professional.id,
+                                name: "Profissional",
+                                avatar: null,
+                                registration,
+                            };
+                        }
+                    })
+                );
+
+                if (!cancelled) setProfessionals(cards);
+            } catch {
+                // Banner vazio não impede o feed de funcionar.
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+
     async function handleLoadMore() {
         if (!nextCursor || isLoadingMore) return;
 
@@ -176,9 +233,6 @@ export default function Community() {
 
             setPosts((prev) => [...prev, ...page.data]);
             setNextCursor(page.next_cursor);
-
-            const authorMap = await getAuthors(page.data.map((post) => post.userId));
-            setAuthors((prev) => ({ ...prev, ...authorMap }));
         } catch (error) {
             setErrorMessage(
                 error instanceof Error
@@ -215,14 +269,10 @@ export default function Community() {
                 content: trimmedContent,
             });
 
-            // O feed é ordenado do mais novo para o mais antigo.
+            // O backend já devolve o autor junto, então o card nasce completo.
             setPosts((prev) => [created, ...prev]);
             setTitle("");
             setContent("");
-
-            void getAuthors([created.userId]).then((authorMap) => {
-                setAuthors((prev) => ({ ...prev, ...authorMap }));
-            });
         } catch (error) {
             if (error instanceof ApiError && error.errors) {
                 const firstField = Object.values(error.errors)[0];
@@ -266,40 +316,46 @@ export default function Community() {
                 </header>
 
                 <section className="community-hero" aria-label="Profissionais em destaque">
-                    {DEMO_PROFESSIONALS.length > 0 && (
+                    {professionals.length > 0 && (
                         <div className="community-hero-cards">
-                            {DEMO_PROFESSIONALS.map((professional) => (
-                                <article
-                                    key={professional.id}
-                                    className="community-pro-card"
-                                >
-                                    <span className="community-pro-avatar">
-                                        <IconUser />
-                                    </span>
+                            {professionals.map((professional) => {
+                                const avatar = avatarUrl(professional.avatar);
 
-                                    <span className="community-pro-text">
-                                        <span className="community-pro-name">
-                                            {professional.name}
-                                        </span>
-                                        <span className="community-pro-specialty">
-                                            {professional.specialty}
-                                        </span>
-                                    </span>
-
-                                    {/* [SEM ROTA] Abrir conversa com profissional */}
-                                    <button
-                                        type="button"
-                                        className="community-pro-chat"
-                                        aria-label={`Conversar com ${professional.name}`}
+                                return (
+                                    <article
+                                        key={professional.id}
+                                        className="community-pro-card"
                                     >
-                                        <IconMessage />
-                                    </button>
-                                </article>
-                            ))}
+                                        <span className="community-pro-avatar">
+                                            {avatar ? <img src={avatar} alt="" /> : <IconUser />}
+                                        </span>
+
+                                        <span className="community-pro-text">
+                                            <span className="community-pro-name">
+                                                {professional.name}
+                                            </span>
+                                            <span className="community-pro-specialty">
+                                                Psicólogo
+                                                {professional.registration
+                                                    ? ` · ${professional.registration}`
+                                                    : ""}
+                                            </span>
+                                        </span>
+
+                                        {/* [LIGAR] Chat com profissional */}
+                                        <button
+                                            type="button"
+                                            className="community-pro-chat"
+                                            aria-label={`Conversar com ${professional.name}`}
+                                        >
+                                            <IconMessage />
+                                        </button>
+                                    </article>
+                                );
+                            })}
                         </div>
                     )}
 
-                    {/* [SEM ROTA] Página de profissionais */}
                     <button
                         type="button"
                         className="community-hero-arrow"
@@ -313,7 +369,6 @@ export default function Community() {
                     <div className="community-composer-head">
                         <h2>Nova publicação</h2>
 
-                        {/* [LIGAR] Opções da publicação */}
                         <button
                             type="button"
                             className="community-dots"
@@ -325,7 +380,6 @@ export default function Community() {
 
                     <div className="community-composer-body">
                         <div className="community-composer-fields">
-
                             <input
                                 type="text"
                                 className="community-composer-title"
@@ -388,10 +442,19 @@ export default function Community() {
                 )}
 
                 {posts.map((post) => {
-                    const author = authors[post.userId];
+                    const author = post.author;
                     const authorName = author?.name || "Usuário";
                     const avatar = avatarUrl(author?.avatar);
                     const time = formatRelativeTime(post.createdAt);
+
+                    const visibility =
+                        post.statusPost === "ativo"
+                            ? "Público"
+                            : post.statusPost === "inativo"
+                              ? "Inativo"
+                              : "";
+
+                    const meta = [time, visibility].filter(Boolean).join(" · ");
 
                     return (
                         <article key={post.id} className="community-post">
@@ -407,14 +470,10 @@ export default function Community() {
 
                                     <div className="community-post-meta">
                                         <h3>{authorName}</h3>
-                                        <p>
-                                            {time ? `${time} · ` : ""}
-                                            Público
-                                        </p>
+                                        <p>{meta}</p>
                                     </div>
                                 </div>
 
-                                {/* [FALTA] DELETE /api/posts/{id} não existe */}
                                 <button
                                     type="button"
                                     className="community-dots"
@@ -438,11 +497,6 @@ export default function Community() {
                             </div>
 
                             <footer className="community-post-footer">
-                                {/*
-                                  [FALTA] PublicationResource não traz a
-                                  contagem de comentários. Por isso não
-                                  existe o "13 comentários" do Figma.
-                                */}
                                 <button type="button" className="community-comment-link">
                                     <IconComment />
                                     Comentários

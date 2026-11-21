@@ -202,6 +202,13 @@
     height: 26px;
 }
 
+.community-pro-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
 .community-pro-text {
     min-width: 0;
 
