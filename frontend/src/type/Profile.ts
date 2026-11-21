@@ -14,8 +14,3 @@ export interface ProfilePayload {
     avatar?: string | null;
     statusProfile?: "ativo" | "inativo";
 }
-
-interface Envelope<T> {
-    data: T;
-    message: string;
-}
