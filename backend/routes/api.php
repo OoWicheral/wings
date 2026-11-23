@@ -27,19 +27,27 @@ Route::middleware('jwt')->group(function () {
     // Autenticação
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::get('auth/me', [AuthController::class, 'me']);
+
     // Perfil
     Route::get('/user/{id}/profile', [ProfileController::class, 'show']);
     Route::post('/user/{id}/profile', [ProfileController::class, 'store']);
     Route::match(['put', 'patch'], '/user/{id}/profile', [ProfileController::class, 'update']);
+
     // Profissionais
     Route::get('/professionals', [ProfessionalController::class, 'index']);
     Route::get('/user/{id}/professional', [ProfessionalController::class, 'show']);
     Route::post('/user/{id}/professional', [ProfessionalController::class, 'store']);
     Route::match(['put', 'patch'], '/user/{id}/professional', [ProfessionalController::class, 'update']);
+
     // Usuários (Listar, Visualizar, Atualizar, Deletar)
     Route::apiResource('user', UserController::class)->except(['store']);
+
     // ChatAi
-    Route::apiResource('chataimessage', ChatAiMessage::class);
+    Route::get('/chats/{chatId}/messages', [ChatAiMessage::class, 'index']);
+    Route::post('/chats/messages', [ChatAiMessage::class, 'store']);
+    Route::match(['put', 'patch'], '/messages/{messageId}', [ChatAiMessage::class, 'update']);
+    Route::delete('/messages/{messageId}', [ChatAiMessage::class, 'destroy']);
+
     // Postagens
     Route::post('/posts', [PublicationController::class, 'store']);
     Route::get('/posts', [PublicationController::class, 'index']);
@@ -49,11 +57,13 @@ Route::middleware('jwt')->group(function () {
     Route::get('/posts/{id_publicacao}', [PublicationController::class, 'show']);
     Route::match(['put', 'patch'], '/posts/{id_publicacao}', [PublicationController::class, 'update']);
     Route::delete('/posts/{id_publicacao}', [PublicationController::class, 'destroy']);
+
     // Comentários
     Route::get('/posts/{id_publicacao}/comments', [CommentController::class, 'index']);
     Route::post('/posts/{id_publicacao}/comments', [CommentController::class, 'store']);
     Route::get('/posts/{id_publicacao}/comments/{id_comentario}', [CommentController::class, 'show']);
     Route::match(['put', 'patch'], '/posts/{id_publicacao}/comments/{id_comentario}', [CommentController::class, 'update']);
+    
     // Denúncias
     Route::get('/reports/mine', [ReportController::class, 'authUserReports']);
     Route::get('/reports', [ReportController::class, 'index']);
