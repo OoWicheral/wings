@@ -1,31 +1,43 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { AuthProvider } from './hooks/use-auth';
-import SignUp from './pages/Sign-up.tsx';
-import SignOn from "./pages/Sign-on.tsx";
-import Home from './pages/Home.tsx';
-import ChatIA from './pages/Chat-ia.tsx';
-import Profile from './pages/Profile.tsx';
-import Community from './pages/Community.tsx';
+import { AuthModalProvider, useAuthModal } from './hooks/use-auth-modal';
+import type { AuthMode } from './hooks/use-auth-modal';
+import AuthModal from './pages/AuthModal';
+import Home from './pages/Home';
+import ChatIA from './pages/Chat-ia';
+import Profile from './pages/Profile';
+import Community from './pages/Community';
 
+function AuthModalRoute({ mode }: { mode: AuthMode }) {
+  const { openAuthModal } = useAuthModal();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    openAuthModal(mode);
+    navigate('/', { replace: true });
+  }, [mode, openAuthModal, navigate]);
+
+  return null;
+}
 
 export default function App() {
-  
-
   return (
-
-     <AuthProvider>
-      <Router>
-        <Routes>
+    <AuthProvider>
+      <AuthModalProvider>
+        <Router>
+          <AuthModal />
+          <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/cadastro" element={<SignUp />} />
-            <Route path="/login" element={<SignOn />} />
+            <Route path="/cadastro" element={<AuthModalRoute mode="signup" />} />
+            <Route path="/login" element={<AuthModalRoute mode="login" />} />
             <Route path="/chat" element={<ChatIA />} />
             <Route path="/comunidade" element={<Community />} />
             <Route path="/perfil" element={<Profile />} />
-            <Route path="/app" element={<App/>} />
             <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
+          </Routes>
+        </Router>
+      </AuthModalProvider>
     </AuthProvider>
-  )
+  );
 }

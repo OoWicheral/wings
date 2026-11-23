@@ -5,10 +5,7 @@ import {Link, useNavigate} from "react-router-dom";
 import { z } from "zod";
 import type { UserCreate } from "../type/User";
 import { useAuth } from "../hooks/use-auth";
-import Header from "../components/Header.tsx";
-import Card from "../components/Card.tsx";
 import { PatternFormat } from 'react-number-format';
-import "./Sign-up.css";
 
 
 
@@ -154,7 +151,7 @@ export default function SignUp() {
 
       await cadastro(dados);
 
-      navigate("/app");
+      navigate("/comunidade");
     } catch (error: unknown) {
       setErroGeral(
           error instanceof Error
@@ -169,191 +166,176 @@ export default function SignUp() {
   const senhaDiferente = formData.confirmPassword.length > 0 && formData.password != formData.confirmPassword;
 
   return (
+      <form className="auth-form auth-form--signup" onSubmit={handleSubmit} noValidate>
+        <h1 className="auth-title">Cadastre-se</h1>
 
-      <main className="signup-page">
-        <Header/>
+        <div className="auth-field">
+          <input
+              id="name"
+              name="name"
+              type="text"
+              className="auth-input"
+              placeholder="Nome Completo*"
+              value={formData.name}
+              onChange={handleChange}
+              aria-invalid={Boolean(erros.name?.length)}
+              aria-describedby="erro-name"
+          />
 
-        <Card>
-
-        <form className="signup-form" onSubmit={handleSubmit} noValidate>
-          <h1 className="signup-title">Cadastre-se</h1>
-          <div className="signup-field">
-            <input
-                id="name"
-                name="name"
-                type="text"
-                placeholder="Nome Completo*"
-                value={formData.name}
-                onChange={handleChange}
-                aria-invalid={Boolean(erros.name?.length)}
-                aria-describedby="erro-name"
-            />
-
-            <div id="erro-name">
-              {erros.name?.map((mensagem, indice) => (
-                  <p key={`${mensagem}-${indice}`}>
-                    {mensagem}
-                  </p>
-              ))}
-            </div>
+          <div id="erro-name">
+            {erros.name?.map((mensagem, indice) => (
+                <p key={`${mensagem}-${indice}`}>
+                  {mensagem}
+                </p>
+            ))}
           </div>
+        </div>
 
-          <div className="signup-field">
-            <input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="E-mail*"
-                value={formData.email}
-                onChange={handleChange}
-                aria-invalid={Boolean(erros.email?.length)}
-                aria-describedby="erro-email"
-            />
+        <div className="auth-field">
+          <input
+              id="email"
+              name="email"
+              type="email"
+              className="auth-input"
+              placeholder="E-mail*"
+              value={formData.email}
+              onChange={handleChange}
+              aria-invalid={Boolean(erros.email?.length)}
+              aria-describedby="erro-email"
+          />
 
-            <div id="erro-email">
-              {erros.email?.map((mensagem, indice) => (
-                  <p key={`${mensagem}-${indice}`}>
-                    {mensagem}
-                  </p>
-              ))}
-            </div>
+          <div id="erro-email">
+            {erros.email?.map((mensagem, indice) => (
+                <p key={`${mensagem}-${indice}`}>
+                  {mensagem}
+                </p>
+            ))}
           </div>
+        </div>
 
-          <div className="signup-field">
-            <PatternFormat
-                id="tel"
-                name="tel"
-                type="tel"
-                className="signup-input"
-                placeholder="Telefone com DDD*"
-                autoComplete="tel"
-                value={formData.tel}
-                onChange={handleChange}
-                aria-invalid={Boolean(erros.tel?.length)}
-                aria-describedby="erro-tel"
+        <div className="auth-field">
+          <PatternFormat
+              id="tel"
+              name="tel"
+              type="tel"
+              className="auth-input"
+              placeholder="Telefone com DDD*"
+              autoComplete="tel"
+              value={formData.tel}
+              onChange={handleChange}
+              aria-invalid={Boolean(erros.tel?.length)}
+              aria-describedby="erro-tel"
 
-                format="(##) 9####-####"
-                allowEmptyFormatting={false}
-                mask="_"
-            />
+              format="(##) 9####-####"
+              allowEmptyFormatting={false}
+              mask="_"
+          />
 
-            <div id="erro-tel">
-              {erros.tel?.map((mensagem, indice) => (
-                  <p key={`${mensagem}-${indice}`}>
-                    {mensagem}
-                  </p>
-              ))}
-            </div>
+          <div id="erro-tel">
+            {erros.tel?.map((mensagem, indice) => (
+                <p key={`${mensagem}-${indice}`}>
+                  {mensagem}
+                </p>
+            ))}
           </div>
+        </div>
 
-          <div className="signup-field">
-            <input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="Senha*"
-                value={formData.password}
-                onChange={handleChange}
-                aria-invalid={Boolean(erros.password?.length)}
-                aria-describedby="erro-password"
-            />
+        <div className="auth-field">
+          <input
+              id="password"
+              name="password"
+              type="password"
+              className="auth-input"
+              placeholder="Senha*"
+              value={formData.password}
+              onChange={handleChange}
+              aria-invalid={Boolean(erros.password?.length)}
+              aria-describedby="erro-password"
+          />
 
-            <div id="erro-password" aria-live="polite">
-              {erros.password?.map((mensagem, indice) => (
-                  <p key={`${mensagem}-${indice}`}>
-                    {mensagem}
-                  </p>
-              ))}
-            </div>
+          <div id="erro-password" aria-live="polite">
+            {erros.password?.map((mensagem, indice) => (
+                <p key={`${mensagem}-${indice}`}>
+                  {mensagem}
+                </p>
+            ))}
           </div>
+        </div>
 
-          <div className="signup-field">
+        <div className="auth-field">
 
-            <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                placeholder="Confirmar sua senha*"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                aria-invalid={senhaDiferente}
-                aria-describedby="erro-confirm-password"
-            />
+          <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              className="auth-input"
+              placeholder="Confirmar sua senha*"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              aria-invalid={senhaDiferente}
+              aria-describedby="erro-confirm-password"
+          />
 
-            <div id="erro-confirm-password" aria-live="polite">
-              {senhaDiferente && (
-                  <p>As senhas não coincidem.</p>
-              )}
-            </div>
+          <div id="erro-confirm-password" aria-live="polite">
+            {senhaDiferente && (
+                <p>As senhas não coincidem.</p>
+            )}
           </div>
+        </div>
 
-          <div className="signup-field">
-            <label htmlFor="dateNasc">
-              Data de nascimento:
-            </label>
-            <input
-                id="dateNasc"
-                name="dateNasc"
-                type="date"
-                className="signup-date"
-                value={formData.dateNasc}
-                onChange={handleChange}
-                aria-invalid={Boolean(erros.dateNasc?.length)}
-                aria-describedby="erro-dateNasc"
-            />
+        <div className="auth-field">
+          <label htmlFor="dateNasc">
+            Data de nascimento:
+          </label>
+          <input
+              id="dateNasc"
+              name="dateNasc"
+              type="date"
+              className="auth-input"
+              value={formData.dateNasc}
+              onChange={handleChange}
+              aria-invalid={Boolean(erros.dateNasc?.length)}
+              aria-describedby="erro-dateNasc"
+          />
 
-            <div id="erro-dateNasc">
-              {erros.dateNasc?.map((mensagem, indice) => (
-                  <p key={`${mensagem}-${indice}`}>
-                    {mensagem}
-                  </p>
-              ))}
-            </div>
+          <div id="erro-dateNasc">
+            {erros.dateNasc?.map((mensagem, indice) => (
+                <p key={`${mensagem}-${indice}`}>
+                  {mensagem}
+                </p>
+            ))}
           </div>
+        </div>
 
-          <div className="signup-professional">
-            <input
-                id="isProfessional"
-                name="isProfessional"
-                type="checkbox"
-                className="signup-checkbox"
-                checked={formData.isProfessional}
-                onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      isProfessional: e.target.checked
-                    }))
-                }
-            />
+        <label className="auth-check">
+          <input
+              id="isProfessional"
+              name="isProfessional"
+              type="checkbox"
+              className="auth-checkbox"
+              checked={formData.isProfessional}
+              onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    isProfessional: e.target.checked
+                  }))
+              }
+          />
+          <span>Sou profissional</span>
+        </label>
 
-            <label htmlFor="isProfessional">
-              Sou profissional
-            </label>
-          </div>
+        <button className="auth-submit" type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Cadastrando..." : "Cadastrar-se"}
+        </button>
 
-          <button className="button-signup" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Cadastrando..." : "Cadastrar-se"}
-          </button>
+        {erroGeral && (
+            <p className="auth-error" role="alert">{erroGeral}</p>
+        )}
 
-          {erroGeral && (
-              <p role="alert">{erroGeral}</p>
-          )}
-
-          <p className="signup-login-link">
-            Já possui conta?{" "}
-            <Link to="/login">Entrar</Link>
-          </p>
-
-
-        </form>
-        </Card>
-
-        <footer>
-          <p>O Wings é uma IA de apoio inicial e não substitui o acompanhamento psicológico. Em caso de crise, ligue 188 (CVV).</p>
-        </footer>
-
-
-
-      </main>
+        <p className="auth-switch">
+          Já possui conta?{" "}
+          <Link to="/login">Entrar</Link>
+        </p>
+      </form>
   );
 }

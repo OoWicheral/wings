@@ -5,9 +5,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { z } from "zod";
 
 import { useAuth } from "../hooks/use-auth";
-import Header from "../components/Header";
-import Card from "../components/Card";
-import "./Sign-on.css";
 
 const loginSchema = z.object({
     email: z.string()
@@ -79,7 +76,7 @@ export default function SignOn() {
 
             await login(resultado.data);
 
-            navigate("/app");
+            navigate("/comunidade");
         } catch (error: unknown) {
             setErroGeral(
                 error instanceof Error
@@ -93,77 +90,73 @@ export default function SignOn() {
 
 
     return (
-        <main className="login-page">
-            <Header />
+        <form className="auth-form" onSubmit={handleSubmit} noValidate>
+            <h1 className="auth-title">Entrar</h1>
 
-            <Card>
-                <form
-                    className="login-form"
-                    onSubmit={handleSubmit}
-                    noValidate
-                >
-                    <h1 className="login-title">Entrar</h1>
+            <div className="auth-field">
+                <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    className="auth-input"
+                    placeholder="E-mail*"
+                    value={formData.email}
+                    onChange={handleChange}
+                    aria-invalid={Boolean(erros.email)}
+                />
 
-                    <div className="login-field">
-
-                        <input
-                            id="email"
-                            name="email"
-                            type="email"
-                            className="login-input"
-                            placeholder="E-mail*"
-                            value={formData.email}
-                            onChange={handleChange}
-                            aria-invalid={Boolean(erros.email)}
-                        />
-
-                        {erros.email && (
-                            <p className="login-error">
-                                {erros.email}
-                            </p>
-                        )}
-                    </div>
-
-                    <div className="login-field">
-
-                        <input
-                            id="password"
-                            name="password"
-                            type="password"
-                            className="login-input"
-                            placeholder="Senha*"
-                            value={formData.password}
-                            onChange={handleChange}
-                            aria-invalid={Boolean(erros.password)}
-                        />
-
-                        {erros.password && (
-                            <p className="login-error">
-                                {erros.password}
-                            </p>
-                        )}
-                    </div>
-
-                    {erroGeral && (
-                        <p className="login-error" role="alert">
-                            {erroGeral}
-                        </p>
-                    )}
-
-                    <button
-                        type="submit"
-                        className="login-button"
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? "Entrando..." : "Entrar"}
-                    </button>
-
-                    <p className="login-signup-link">
-                        Ainda não possui conta?{" "}
-                        <Link to="/cadastro">Cadastre-se</Link>
+                {erros.email && (
+                    <p className="auth-error">
+                        {erros.email}
                     </p>
-                </form>
-            </Card>
-        </main>
+                )}
+            </div>
+
+            <div className="auth-field">
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    className="auth-input"
+                    placeholder="Senha*"
+                    value={formData.password}
+                    onChange={handleChange}
+                    aria-invalid={Boolean(erros.password)}
+                />
+
+                {erros.password && (
+                    <p className="auth-error">
+                        {erros.password}
+                    </p>
+                )}
+            </div>
+
+            <label className="auth-check">
+                <input
+                    type="checkbox"
+                    className="auth-checkbox"
+                />
+                <span>Lembre-se de mim</span>
+            </label>
+
+            {erroGeral && (
+                <p className="auth-error" role="alert">
+                    {erroGeral}
+                </p>
+            )}
+
+            <button
+                type="submit"
+                className="auth-submit"
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? "Entrando..." : "Entrar"}
+            </button>
+
+            <p className="auth-switch">
+                Não possui conta?{" "}
+                <Link to="/cadastro">Cadastre-se</Link>
+            </p>
+        </form>
     );
 }
