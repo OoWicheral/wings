@@ -37,6 +37,18 @@ class AiChatController extends Controller
         ->setStatusCode(201);
     }
 
+    public function show($id)
+    {
+        // Só mostra o chat se pertencer ao usuário e ainda não foi deletado
+        $chat = AiChat::where('id_chat_ia', $id)
+        ->where('id_usuario', auth()->id())
+        ->where('status_chat_ia', 'ativo')
+        ->firstOrFail();
+
+        return (new AiChatResource($chat))
+        ->additional(['message' => 'Chat encontrado com sucesso']);
+    }
+
     public function update(Request $request, $id)
     {
         $request->validate([

@@ -15,12 +15,15 @@
         "image": "http://..." | null,
         "createdAt": "...",
         "updatedAt": "...",
-        "statusPost": "ativo" | "inativo"
+        "statusPost": "ativo" | "inativo",
+        "commentsCount": 0
       }
     ],
-    "per_page": 15,
-    "next_cursor": "eyJpZCI6..."
+    "links": { "first": null, "last": null, "prev": null, "next": null },
+    "meta": { "path": "http://...", "per_page": 15, "next_cursor": "eyJpZCIu...", "prev_cursor": null }
   }
+
+  GET /api/posts/{id}/comments -> mesma paginação por cursor, com Comment[].
 
   POST /api/posts     -> { data: Publication, message }
   PATCH /api/posts/{id} -> { data: Publication, message }
@@ -54,11 +57,21 @@ export interface PublicationCreate {
     content: string;
 }
 
-/* Envelope da paginação por cursor do Laravel. */
+/* Envelope da paginação por cursor do Laravel (o cursor fica em meta). */
 export interface FeedPage {
     data: Publication[];
-    per_page: number;
-    next_cursor: string | null;
+    links: {
+        first: string | null;
+        last: string | null;
+        prev: string | null;
+        next: string | null;
+    };
+    meta: {
+        path: string;
+        per_page: number;
+        next_cursor: string | null;
+        prev_cursor: string | null;
+    };
 }
 
 export interface Comment {
@@ -73,8 +86,18 @@ export interface Comment {
 
 export interface CommentPage {
     data: Comment[];
-    per_page: number;
-    next_cursor: string | null;
+    links: {
+        first: string | null;
+        last: string | null;
+        prev: string | null;
+        next: string | null;
+    };
+    meta: {
+        path: string;
+        per_page: number;
+        next_cursor: string | null;
+        prev_cursor: string | null;
+    };
 }
 
 export interface Professional {

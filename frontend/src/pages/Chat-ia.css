@@ -509,6 +509,7 @@
     line-height: 1.35;
     color: #3d3d3d;
     overflow-wrap: anywhere;
+    white-space: pre-wrap;
 }
 
 .chat-assistant-text {
@@ -724,6 +725,199 @@
 
 .chat-composer--multiline .chat-composer-actions {
     margin-left: auto;
+}
+
+/* =========================================================
+   ESTADOS DE LOGICA (carregando, erro, digitando, edicao)
+   ========================================================= */
+
+.chat-history-empty {
+    margin: 4px 2px;
+
+    font-size: 15px;
+    color: var(--chat-text-muted);
+}
+
+.chat-thread-status {
+    margin: 0 0 18px;
+
+    font-size: 16px;
+    color: var(--chat-text-muted);
+}
+
+.chat-thread-more {
+    display: block;
+
+    margin: 0 auto 20px;
+    padding: 8px 16px;
+
+    border-radius: 8px;
+    background: #f2f2f2;
+
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--chat-accent-dark);
+
+    transition: background 0.15s ease;
+}
+
+.chat-thread-more:hover:not(:disabled) {
+    background: var(--chat-hover);
+}
+
+.chat-thread-more:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.chat-error {
+    margin: 0 0 12px;
+    padding: 10px 14px;
+
+    border-radius: 10px;
+    background: #fdecea;
+
+    font-size: 15px;
+    color: #b3261e;
+}
+
+/* Indicador de "digitando" (tres pontos animados). */
+.chat-typing {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    min-height: 30px;
+}
+
+.chat-typing span {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+    background: #b9b9b9;
+
+    animation: chat-typing-bounce 1.2s infinite ease-in-out;
+}
+
+.chat-typing span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.chat-typing span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes chat-typing-bounce {
+    0%,
+    60%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.55;
+    }
+
+    30% {
+        transform: translateY(-6px);
+        opacity: 1;
+    }
+}
+
+/* Edicao de uma mensagem do usuario. */
+.chat-message-edit {
+    width: 100%;
+    max-width: 540px;
+}
+
+.chat-message-edit-input {
+    width: 100%;
+    padding: 14px 16px;
+
+    border: 1px solid var(--chat-border);
+    border-radius: 14px;
+    outline: 0;
+    resize: vertical;
+
+    background: #fafafa;
+
+    font-size: 17px;
+    line-height: 1.4;
+    color: #3d3d3d;
+}
+
+.chat-message-edit-input:focus {
+    border-color: var(--chat-accent);
+}
+
+.chat-message-edit-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-top: 10px;
+}
+
+.chat-message-edit-actions button {
+    padding: 7px 14px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+    color: #5b5b5b;
+
+    transition: background 0.15s ease;
+}
+
+.chat-message-edit-actions button:hover {
+    background: var(--chat-hover);
+}
+
+.chat-message-edit-actions .chat-message-edit-save {
+    background: var(--chat-accent);
+    color: #ffffff;
+}
+
+.chat-message-edit-actions .chat-message-edit-save:hover {
+    background: var(--chat-accent-dark);
+}
+
+.chat-message-edit-actions .chat-message-edit-delete {
+    display: grid;
+    place-items: center;
+
+    width: 34px;
+    height: 34px;
+    padding: 0;
+
+    color: #b3261e;
+}
+
+.chat-message-edit-actions .chat-message-edit-delete svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Botoes sem acao no momento (anexo e audio). */
+.chat-composer-add:disabled,
+.chat-composer-mic:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.chat-composer-add:disabled:hover,
+.chat-composer-mic:disabled:hover {
+    background: transparent;
+}
+
+.chat-composer-send:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.chat-new-chat:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 /* =========================================================

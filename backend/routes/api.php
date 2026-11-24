@@ -42,8 +42,8 @@ Route::middleware('jwt')->group(function () {
     Route::post('/user/{id}/professional', [ProfessionalController::class, 'store']);
     Route::match(['put', 'patch'], '/user/{id}/professional', [ProfessionalController::class, 'update']);
 
-    // Usuários (Listar, Visualizar, Atualizar, Deletar)
-    Route::apiResource('user', UserController::class)->except(['store']);
+    // Usuários (Listar, Visualizar, Atualizar)
+    Route::apiResource('user', UserController::class)->except(['store', 'destroy']);
 
     // ChatAI
     Route::apiResource('chats', AiChatController::class);

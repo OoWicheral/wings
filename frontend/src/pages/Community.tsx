@@ -132,7 +132,7 @@ function CommentPanel({ postId, onCreated }: { postId: number; onCreated: () => 
                 if (cancelled) return;
 
                 setComments(page.data);
-                setNextCursor(page.next_cursor);
+                setNextCursor(page.meta.next_cursor);
                 setStatus("ready");
             } catch (error) {
                 if (cancelled) return;
@@ -161,7 +161,7 @@ function CommentPanel({ postId, onCreated }: { postId: number; onCreated: () => 
             const page = await getComments(postId, nextCursor);
 
             setComments((prev) => [...prev, ...page.data]);
-            setNextCursor(page.next_cursor);
+            setNextCursor(page.meta.next_cursor);
         } catch (error) {
             setMoreError(
                 error instanceof Error
@@ -363,7 +363,7 @@ export default function Community() {
                 if (cancelled) return;
 
                 setPosts(page.data);
-                setNextCursor(page.next_cursor);
+                setNextCursor(page.meta.next_cursor);
                 setStatus("ready");
             } catch (error) {
                 if (cancelled) return;
@@ -449,7 +449,7 @@ export default function Community() {
             const page = await getFeed(nextCursor, activeSearch);
 
             setPosts((prev) => [...prev, ...page.data]);
-            setNextCursor(page.next_cursor);
+            setNextCursor(page.meta.next_cursor);
         } catch (error) {
             setErrorMessage(
                 error instanceof Error
