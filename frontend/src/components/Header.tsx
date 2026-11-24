@@ -38,10 +38,10 @@ export default function Header() {
             </Link>
 
             <nav className="header-nav" aria-label="Navegação principal">
-                <a href="#ia">Inteligência Artificial</a>
+                <Link to="/chat">Inteligência Artificial</Link>
                 <a href="#sobre">Sobre</a>
-                <a href="#comunidade">Comunidade</a>
-                <a href="#profissionais">Profissionais</a>
+                <Link to="/comunidade">Comunidade</Link>
+                <Link to="/profissionais">Profissionais</Link>
             </nav>
 
             <div className="header-actions">
@@ -81,6 +81,14 @@ export default function Header() {
                                 </div>
 
                                 <div className="popup-divider" />
+
+                                <Link
+                                    to="/perfil"
+                                    className="popup-config-btn"
+                                    onClick={() => setIsOpen(false)}
+                                >
+                                    Acessar perfil
+                                </Link>
 
                                 <Link
                                     to="/configuracoes"

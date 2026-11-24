@@ -1,4 +1,5 @@
 
+import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import "./Home.css";
 
@@ -57,13 +58,13 @@ export default function Home() {
                     </div>
 
                     <div className="hero-buttons">
-                        <a href="/login" className="button-primary">
+                        <Link to="/chat" className="button-primary">
                             Conheça nosso assistente
-                        </a>
+                        </Link>
 
-                        <a href="/profissionais" className="button-secondary">
+                        <Link to="/comunidade" className="button-secondary">
                             Procure Ajuda
-                        </a>
+                        </Link>
                     </div>
                 </div>
 
@@ -135,9 +136,9 @@ export default function Home() {
                         ))}
                     </div>
 
-                    <a href="/login" className="ai-button">
+                    <Link to="/chat" className="ai-button">
                         Conheça nosso assistente
-                    </a>
+                    </Link>
 
                     <small className="ai-disclaimer">
                         A assistente não substitui atendimento profissional
