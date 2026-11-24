@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Resources\AiMessageResource;
 use App\Models\AiMessages;
 use App\Models\AiChat;
 use App\Http\Requests\StoreChatAiMessageRequest;
@@ -23,14 +24,14 @@ class ChatAiMessage extends Controller
         ->orderBy('id_msg', 'desc')
         ->cursorPaginate(20);
 
-        return response()->json($messages, 200);
+        return AiMessageResource::collection($messages);
     }
 
     public function store(StoreChatAiMessageRequest $request, AiService $aiService)
     {
-        $aiResponse = DB::transaction(function() use ($request, $aiService) 
+        $messages = DB::transaction(function() use ($request, $aiService) 
         {
-            AiMessages::create([
+            $userMessage = AiMessages::create([
                 'conteudo_msg' => $request->prompt,
                 'id_usuario' => auth()->id(),
                 'id_chat' => $request->idChat,
@@ -38,19 +39,21 @@ class ChatAiMessage extends Controller
 
             $geminiResponse = $aiService->generateResponse($request->prompt); //gemini gera reposta
             
-            AiMessages::create([
+            $aiMessage = AiMessages::create([
                 'conteudo_msg' => $geminiResponse,
                 'id_chat' => $request->idChat,
             ]);
 
-            return $geminiResponse;
+            return [
+                'user' => $userMessage,
+                'ai'   => $aiMessage,
+            ];
         });
 
         return response()->json([
-            'data' => $aiResponse,
-            'message' => 'Mensagem enviada com sucesso',
-        ], 200);        
-
+            'user_message' => new AiMessageResource($messages['user']),
+            'ai_message'   => new AiMessageResource($messages['ai']),
+        ], 201);      
     }
 
     public function update(Request $request, $messageId)
@@ -67,10 +70,8 @@ class ChatAiMessage extends Controller
             'conteudo_msg' => $request->prompt
         ]);
 
-        return response()->json([
-            'data' => $message,
-            'message' => 'Mensagem atualizada com sucesso'
-        ], 200);
+        return (new AiMessageResource($message))
+        ->additional(['message' => 'Mensagem atualizada com sucesso']);
     }
 
     public function destroy($messageId)

@@ -15,7 +15,7 @@ class AiService
                     ['text' => '
                             Você é o assistente virtual do projeto Wings, focado em apoiarpessoas superando dependências. 
                             Seja sempre empático e objetivo. 
-                            Se o usuário perguntar sobre temas fora desse escopo (como programação, política ou esportes), diga educadamente que você só pode ajudar com assuntos relacionados ao Wings.z
+                            Se o usuário perguntar sobre temas fora desse escopo (como programação, política ou esportes), diga educadamente que você só pode ajudar com assuntos relacionados ao Wings.
                         '
                     ]
                 ] 

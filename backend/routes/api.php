@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ChatAiMessage;
+use App\Http\Controllers\Api\AiChatController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ProfessionalController;
@@ -42,7 +43,10 @@ Route::middleware('jwt')->group(function () {
     // Usuários (Listar, Visualizar, Atualizar, Deletar)
     Route::apiResource('user', UserController::class)->except(['store']);
 
-    // ChatAi
+    // ChatAI
+    Route::apiResource('chats', AiChatController::class);
+    
+    // Mensagens ChatAI
     Route::get('/chats/{chatId}/messages', [ChatAiMessage::class, 'index']);
     Route::post('/chats/messages', [ChatAiMessage::class, 'store']);
     Route::match(['put', 'patch'], '/messages/{messageId}', [ChatAiMessage::class, 'update']);
