@@ -81,7 +81,7 @@ class ProfessionalController extends Controller
             });
         } catch (Throwable $exception) {
             foreach ($storedPaths as $path) {
-                if (!Storage::disk('public')->delete($path)) {
+                if (!Storage::disk('local')->delete($path)) {
                     Log::warning('Não foi possível remover um documento após falha ao criar o cadastro profissional.', [
                         'user_id' => $id,
                         'file_path' => $path,
@@ -158,7 +158,7 @@ class ProfessionalController extends Controller
             });
         } catch (Throwable $exception) {
             foreach ($storedPaths as $path) {
-                if (!Storage::disk('public')->delete($path)) {
+                if (!Storage::disk('local')->delete($path)) {
                     Log::warning('Não foi possível remover um documento após falha ao atualizar o cadastro profissional.', [
                         'user_id' => $id,
                         'file_path' => $path,
@@ -170,7 +170,7 @@ class ProfessionalController extends Controller
         }
 
         foreach (array_filter($oldPaths) as $path) {
-            if (!Storage::disk('public')->delete($path)) {
+            if (!Storage::disk('local')->delete($path)) {
                 Log::warning('Não foi possível remover um documento profissional substituído.', [
                     'user_id' => $id,
                     'file_path' => $path,

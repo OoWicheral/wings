@@ -118,7 +118,7 @@ class PublicationController extends Controller
         $imagePath = null;
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('publications', 'public');
+            $imagePath = $request->file('image')->store('publications', 'local');
 
             if ($imagePath === false) {
                 abort(500, 'Não foi possível salvar a imagem da publicação.');
@@ -138,7 +138,7 @@ class PublicationController extends Controller
             $publication->load('user.profile');
         } catch (\Throwable $exception) {
             if ($imagePath !== null) {
-                Storage::disk('public')->delete($imagePath);
+                Storage::disk('local')->delete($imagePath);
             }
 
             throw $exception;
@@ -194,7 +194,7 @@ class PublicationController extends Controller
             });
             $saved->load('user.profile');
         } catch (\Throwable $exception) {
-            if ($newImagePath !== null && !Storage::disk('public')->delete($newImagePath)) {
+            if ($newImagePath !== null && !Storage::disk('local')->delete($newImagePath)) {
                 Log::warning('Não foi possível remover a nova imagem após falha ao atualizar publicação.', [
                     'publication_id' => $publication->id_publicacao,
                     'image_path' => $newImagePath,
@@ -205,7 +205,7 @@ class PublicationController extends Controller
         }
 
         if ($newImagePath !== null && $oldImagePath !== null
-            && !Storage::disk('public')->delete($oldImagePath)) {
+            && !Storage::disk('local')->delete($oldImagePath)) {
             Log::warning('Não foi possível remover a imagem antiga da publicação.', [
                 'publication_id' => $publication->id_publicacao,
                 'image_path' => $oldImagePath,
@@ -230,7 +230,7 @@ class PublicationController extends Controller
             $publication->delete();
         });
 
-        if ($imagePath !== null && !Storage::disk('public')->delete($imagePath)) {
+        if ($imagePath !== null && !Storage::disk('local')->delete($imagePath)) {
             Log::warning('Não foi possível remover a imagem da publicação excluída.', [
                 'publication_id' => $publication->id_publicacao,
                 'image_path' => $imagePath,
