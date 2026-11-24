@@ -512,7 +512,7 @@ export default function Community() {
                             <footer className="community-post-footer">
                                 <button type="button" className="community-comment-link">
                                     <IconComment />
-                                    Comentários
+                                    {`Comentários (${post.commentsCount ?? 0})`}
                                 </button>
                             </footer>
                         </article>

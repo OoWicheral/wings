@@ -17,10 +17,25 @@ class PublicationController extends Controller
 {
 
     // GET /api/posts
-    public function index()
+    public function index(Request $request)
     {
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:100'],
+            'cursor' => ['nullable', 'string'],
+        ]);
+
+        $search = trim($validated['search'] ?? '');
+
         $publications = Publication::with('user.profile')
             ->withCount('comments')
+            ->when($search !== '', function ($query) use ($search) {
+                $term = '%' . addcslashes($search, '%_\\') . '%';
+
+                $query->where(function ($query) use ($term) {
+                    $query->where('titulo_publicacao', 'like', $term)
+                        ->orWhere('conteudo_publicacao', 'like', $term);
+                });
+            })
             ->orderByDesc('criado_em')
             ->orderByDesc('id_publicacao')
             ->cursorPaginate(15);

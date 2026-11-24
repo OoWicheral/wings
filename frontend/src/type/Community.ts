@@ -47,6 +47,8 @@ export interface Publication {
     createdAt: string;
     updatedAt: string;
     statusPost: "ativo" | "inativo" | null;
+    /* Vem de withCount('comments') nos GETs do feed. */
+    commentsCount?: number;
 }
 
 export interface PublicationCreate {
