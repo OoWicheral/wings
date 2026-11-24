@@ -131,7 +131,8 @@ class PublicationController extends Controller
                     'id_usuario' => auth()->id(),
                     'titulo_publicacao' => $validated['title'],
                     'conteudo_publicacao' => $validated['content'],
-                    'img_anexo' => $imagePath,
+                    'img_anexo' => $imagePath ?? '',
+                    'status_publicacao' => 'ativo',
                 ]);
             });
             $publication->load('user.profile');

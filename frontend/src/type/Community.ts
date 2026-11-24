@@ -39,7 +39,6 @@ export interface AuthorSummary {
 export interface Publication {
     id: number;
     userId: number;
-    /* Já vem pronto no feed (PublicationResource -> AuthorResource). */
     author: AuthorSummary | null;
     title: string;
     content: string;
@@ -47,7 +46,6 @@ export interface Publication {
     createdAt: string;
     updatedAt: string;
     statusPost: "ativo" | "inativo" | null;
-    /* Vem de withCount('comments') nos GETs do feed. */
     commentsCount?: number;
 }
 
@@ -63,13 +61,22 @@ export interface FeedPage {
     next_cursor: string | null;
 }
 
-/*
-  Profissional.
+export interface Comment {
+    id: number;
+    userId: number;
+    author: AuthorSummary | null;
+    postId: number;
+    content: string;
+    createdAt: string;
+    updatedAt: string;
+}
 
-  O ProfessionalResource devolve apenas dados de registro (CRP/CIP).
-  Nome, avatar e especialidade NÃO vêm nele: por isso o front busca
-  o perfil público de cada profissional pelo id_usuario.
-*/
+export interface CommentPage {
+    data: Comment[];
+    per_page: number;
+    next_cursor: string | null;
+}
+
 export interface Professional {
     id: number;
     crpRegion: string | null;

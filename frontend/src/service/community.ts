@@ -1,6 +1,8 @@
 import { ApiError, apiFetch } from "./api";
 import type {
     AuthorSummary,
+    Comment,
+    CommentPage,
     FeedPage,
     Professional,
     ProfessionalPage,
@@ -28,6 +30,33 @@ export async function createPost(payload: PublicationCreate): Promise<Publicatio
         method: "POST",
         body: JSON.stringify(payload),
     });
+
+    return res.data;
+}
+
+export async function getComments(
+    postId: number,
+    cursor?: string | null
+): Promise<CommentPage> {
+    const params = new URLSearchParams();
+
+    if (cursor) params.set("cursor", cursor);
+
+    const query = params.toString();
+
+    return apiFetch<CommentPage>(
+        `/api/posts/${postId}/comments${query ? `?${query}` : ""}`
+    );
+}
+
+export async function createComment(postId: number, content: string): Promise<Comment> {
+    const res = await apiFetch<{ data: Comment; message: string }>(
+        `/api/posts/${postId}/comments`,
+        {
+            method: "POST",
+            body: JSON.stringify({ content }),
+        }
+    );
 
     return res.data;
 }
@@ -71,9 +100,7 @@ export async function getAuthor(userId: number): Promise<AuthorSummary> {
     return author;
 }
 
-/* =========================================================
-   PROFISSIONAIS
-   ========================================================= */
+
 
 export async function getProfessionals(): Promise<Professional[]> {
     const res = await apiFetch<ProfessionalPage>("/api/professionals");

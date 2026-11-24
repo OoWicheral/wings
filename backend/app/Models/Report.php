@@ -13,12 +13,16 @@ class Report extends Model
     protected $keyType = 'int';
     public $timestamps = true;
     const CREATED_AT = 'criado_em';
-    const UPDATED_AT = 'modificado_em';
+    const UPDATED_AT = null; // A tabela denuncia não tem coluna modificado_em.
 
     protected $fillable = [
         'motivo_denuncia',
         'id_usuario_denunciou',
         'id_usuario_denunciado',
+    ];
+
+    protected $attributes = [
+        'status_denuncia' => 'ativo',
     ];
 
     public function user(): BelongsTo

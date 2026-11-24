@@ -20,6 +20,11 @@ class Publication extends Model
         'status_publicacao',
     ];
 
+    protected $attributes = [
+        'status_publicacao' => 'ativo',
+        'img_anexo' => '',
+    ];
+
     const CREATED_AT = 'criado_em';
     const UPDATED_AT = 'modificado_em';
 

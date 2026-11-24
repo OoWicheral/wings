@@ -19,6 +19,10 @@ class Comment extends Model
         'id_publicacao',
     ];
 
+    protected $attributes = [
+        'status_comentario' => 'ativo',
+    ];
+
     const CREATED_AT = 'criado_em';
     const UPDATED_AT = 'modificado_em';
 

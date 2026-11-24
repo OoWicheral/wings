@@ -4,9 +4,9 @@ import type { FormEvent } from "react";
 import AppSidebar from "../components/AppSidebar";
 import { useAuth } from "../hooks/use-auth";
 import { ApiError } from "../service/api";
-import { createPost, getAuthor, getFeed, getProfessionals } from "../service/community";
+import { createComment, createPost, getAuthor, getComments, getFeed, getProfessionals } from "../service/community";
 import { avatarUrl, formatRelativeTime } from "../utils/format";
-import type { Publication } from "../type/Community";
+import type { Comment, Publication } from "../type/Community";
 
 import "./Community.css";
 
@@ -108,6 +108,210 @@ function IconUser() {
     );
 }
 
+function CommentPanel({ postId, onCreated }: { postId: number; onCreated: () => void }) {
+    const [status, setStatus] = useState<FeedStatus>("loading");
+    const [comments, setComments] = useState<Comment[]>([]);
+    const [nextCursor, setNextCursor] = useState<string | null>(null);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+    const [moreError, setMoreError] = useState("");
+    const [reloadToken, setReloadToken] = useState(0);
+
+    const [draft, setDraft] = useState("");
+    const [isSending, setIsSending] = useState(false);
+    const [sendError, setSendError] = useState("");
+
+    useEffect(() => {
+        let cancelled = false;
+
+        void (async () => {
+            setStatus("loading");
+
+            try {
+                const page = await getComments(postId);
+                if (cancelled) return;
+
+                setComments(page.data);
+                setNextCursor(page.next_cursor);
+                setStatus("ready");
+            } catch (error) {
+                if (cancelled) return;
+
+                setErrorMessage(
+                    error instanceof Error
+                        ? error.message
+                        : "Não foi possível carregar os comentários."
+                );
+                setStatus("error");
+            }
+        })();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [postId, reloadToken]);
+
+    async function handleLoadMore() {
+        if (!nextCursor || isLoadingMore) return;
+
+        setIsLoadingMore(true);
+        setMoreError("");
+
+        try {
+            const page = await getComments(postId, nextCursor);
+
+            setComments((prev) => [...prev, ...page.data]);
+            setNextCursor(page.next_cursor);
+        } catch (error) {
+            setMoreError(
+                error instanceof Error
+                    ? error.message
+                    : "Não foi possível carregar mais comentários."
+            );
+        } finally {
+            setIsLoadingMore(false);
+        }
+    }
+
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+        event.preventDefault();
+
+        const trimmed = draft.trim();
+
+        if (!trimmed) {
+            setSendError("Escreva um comentário.");
+            return;
+        }
+
+        setIsSending(true);
+        setSendError("");
+
+        try {
+            const created = await createComment(postId, trimmed);
+
+            setComments((prev) => [created, ...prev]);
+            setDraft("");
+            onCreated();
+        } catch (error) {
+            if (error instanceof ApiError && error.errors) {
+                const firstField = Object.values(error.errors)[0];
+                setSendError(firstField?.[0] ?? error.message);
+            } else {
+                setSendError(
+                    error instanceof Error
+                        ? error.message
+                        : "Não foi possível enviar o comentário."
+                );
+            }
+        } finally {
+            setIsSending(false);
+        }
+    }
+
+    return (
+        <section className="community-comments" id={`comments-${postId}`}>
+            <form className="community-comment-form" onSubmit={handleSubmit} noValidate>
+                <input
+                    type="text"
+                    className="community-comment-input"
+                    placeholder="Escreva um comentário…"
+                    aria-label="Escreva um comentário"
+                    value={draft}
+                    onChange={(event) => setDraft(event.target.value)}
+                    maxLength={150}
+                    disabled={isSending}
+                />
+
+                <button
+                    type="submit"
+                    className="community-comment-send"
+                    disabled={isSending}
+                >
+                    {isSending ? "Enviando..." : "Enviar"}
+                </button>
+            </form>
+
+            {sendError && (
+                <p className="community-error" role="alert">
+                    {sendError}
+                </p>
+            )}
+
+            {status === "loading" && (
+                <p className="community-comment-feedback">Carregando comentários…</p>
+            )}
+
+            {status === "error" && (
+                <div className="community-comment-feedback">
+                    <p>{errorMessage}</p>
+                    <button
+                        type="button"
+                        className="community-retry"
+                        onClick={() => setReloadToken((token) => token + 1)}
+                    >
+                        Tentar novamente
+                    </button>
+                </div>
+            )}
+
+            {status === "ready" && comments.length === 0 && (
+                <p className="community-comment-feedback">
+                    Nenhum comentário ainda. Seja a primeira pessoa a comentar.
+                </p>
+            )}
+
+            {comments.length > 0 && (
+                <ul className="community-comment-list">
+                    {comments.map((comment) => {
+                        const authorName = comment.author?.name || "Usuário";
+                        const avatar = avatarUrl(comment.author?.avatar);
+
+                        return (
+                            <li key={comment.id} className="community-comment">
+                                <span
+                                    className="community-comment-avatar"
+                                    aria-hidden="true"
+                                >
+                                    {avatar ? (
+                                        <img src={avatar} alt="" />
+                                    ) : (
+                                        authorName.charAt(0).toUpperCase()
+                                    )}
+                                </span>
+
+                                <div className="community-comment-body">
+                                    <div className="community-comment-head">
+                                        <strong>{authorName}</strong>
+                                        <span>{formatRelativeTime(comment.createdAt)}</span>
+                                    </div>
+                                    <p>{comment.content}</p>
+                                </div>
+                            </li>
+                        );
+                    })}
+                </ul>
+            )}
+
+            {moreError && (
+                <p className="community-error" role="alert">
+                    {moreError}
+                </p>
+            )}
+
+            {nextCursor && (
+                <button
+                    type="button"
+                    className="community-comment-more"
+                    onClick={() => void handleLoadMore()}
+                    disabled={isLoadingMore}
+                >
+                    {isLoadingMore ? "Carregando..." : "Ver mais comentários"}
+                </button>
+            )}
+        </section>
+    );
+}
+
 export default function Community() {
     const { user } = useAuth();
 
@@ -121,6 +325,8 @@ export default function Community() {
 
     const [search, setSearch] = useState("");
     const [activeSearch, setActiveSearch] = useState("");
+
+    const [openCommentsId, setOpenCommentsId] = useState<number | null>(null);
 
     const [professionals, setProfessionals] = useState<ProfessionalCard[]>([]);
 
@@ -149,6 +355,7 @@ export default function Community() {
 
         let cancelled = false;
         setStatus("loading");
+        setOpenCommentsId(null);
 
         void (async () => {
             try {
@@ -180,7 +387,6 @@ export default function Community() {
         };
     }, [reloadToken, activeSearch]);
 
-    /* ---------- Profissionais do banner ---------- */
 
     useEffect(() => {
         if (USE_DEMO_FEED) {
@@ -224,7 +430,7 @@ export default function Community() {
 
                 if (!cancelled) setProfessionals(cards);
             } catch {
-                // Banner vazio não impede o feed de funcionar.
+
             }
         })();
 
@@ -280,7 +486,7 @@ export default function Community() {
                 content: trimmedContent,
             });
 
-            // O backend já devolve o autor junto, então o card nasce completo.
+
             setPosts((prev) => [created, ...prev]);
             setTitle("");
             setContent("");
@@ -298,6 +504,16 @@ export default function Community() {
         } finally {
             setIsPublishing(false);
         }
+    }
+
+    function handleCommentCreated(postId: number) {
+        setPosts((prev) =>
+            prev.map((post) =>
+                post.id === postId
+                    ? { ...post, commentsCount: (post.commentsCount ?? 0) + 1 }
+                    : post
+            )
+        );
     }
 
     const firstName = user?.name?.split(" ")[0] ?? "";
@@ -510,11 +726,28 @@ export default function Community() {
                             </div>
 
                             <footer className="community-post-footer">
-                                <button type="button" className="community-comment-link">
+                                <button
+                                    type="button"
+                                    className="community-comment-link"
+                                    aria-expanded={openCommentsId === post.id}
+                                    aria-controls={`comments-${post.id}`}
+                                    onClick={() =>
+                                        setOpenCommentsId((current) =>
+                                            current === post.id ? null : post.id
+                                        )
+                                    }
+                                >
                                     <IconComment />
                                     {`Comentários (${post.commentsCount ?? 0})`}
                                 </button>
                             </footer>
+
+                            {openCommentsId === post.id && (
+                                <CommentPanel
+                                    postId={post.id}
+                                    onCreated={() => handleCommentCreated(post.id)}
+                                />
+                            )}
                         </article>
                     );
                 })}
