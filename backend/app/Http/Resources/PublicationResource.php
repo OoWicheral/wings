@@ -24,6 +24,7 @@ class PublicationResource extends JsonResource
             'createdAt' => $this->criado_em,
             'updatedAt' => $this->modificado_em,
             'statusPost' => $this->status_publicacao,
+            'commentsCount' => $this->whenCounted('comments'),
         ];
     }
 }

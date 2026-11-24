@@ -17,24 +17,10 @@ class PublicationController extends Controller
 {
 
     // GET /api/posts
-    public function index(Request $request)
+    public function index()
     {
-        $validated = $request->validate([
-            'search' => ['nullable', 'string', 'max:100'],
-            'cursor' => ['nullable', 'string'],
-        ]);
-
-        $search = trim($validated['search'] ?? '');
-
         $publications = Publication::with('user.profile')
-            ->when($search !== '', function ($query) use ($search) {
-                $term = '%' . addcslashes($search, '%_\\') . '%';
-
-                $query->where(function ($query) use ($term) {
-                    $query->where('titulo_publicacao', 'like', $term)
-                        ->orWhere('conteudo_publicacao', 'like', $term);
-                });
-            })
+            ->withCount('comments')
             ->orderByDesc('criado_em')
             ->orderByDesc('id_publicacao')
             ->cursorPaginate(15);
@@ -42,10 +28,33 @@ class PublicationController extends Controller
         return PublicationResource::collection($publications);
     }
 
+    // GET /api/posts/search?q=term
+    public function search(Request $request)
+    {
+        $validated = $request->validate([
+            'q' => ['required', 'string', 'min:2', 'max:100'],
+        ]);
+
+        $term = $validated['q'];
+        $publications = Publication::with('user.profile')
+            ->withCount('comments')
+            ->where(function ($query) use ($term) {
+                $query->where('titulo_publicacao', 'like', "%{$term}%")
+                    ->orWhere('conteudo_publicacao', 'like', "%{$term}%");
+            })
+            ->orderByDesc('criado_em')
+            ->orderByDesc('id_publicacao')
+            ->paginate(15);
+
+        return PublicationResource::collection($publications);
+    }
+
     // GET api/posts/{id}
     public function show($id_publicacao)
     {
-        $publication = Publication::with('user.profile')->findOrFail($id_publicacao);
+        $publication = Publication::with('user.profile')
+            ->withCount('comments')
+            ->findOrFail($id_publicacao);
         return new PublicationResource($publication);
     }
 
@@ -53,6 +62,7 @@ class PublicationController extends Controller
     public function authUserPosts()
     {
         $publications = Publication::with('user.profile')
+            ->withCount('comments')
             ->where('id_usuario', auth()->id())
             ->latest('criado_em')
             ->paginate(15);
@@ -68,6 +78,7 @@ class PublicationController extends Controller
         return PublicationResource::collection(
             $user->posts()
                 ->with('user.profile')
+                ->withCount('comments')
                 ->latest('criado_em')
                 ->paginate(15)
         );
@@ -77,6 +88,7 @@ class PublicationController extends Controller
     public function authUserUniquePost($id_publicacao)
     {
         $publication = Publication::with('user.profile')
+            ->withCount('comments')
             ->where('id_usuario', auth()->id())
             ->where('id_publicacao', $id_publicacao)
             ->firstOrFail();

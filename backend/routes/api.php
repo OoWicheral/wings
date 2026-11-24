@@ -51,6 +51,7 @@ Route::middleware('jwt')->group(function () {
     // Postagens
     Route::post('/posts', [PublicationController::class, 'store']);
     Route::get('/posts', [PublicationController::class, 'index']);
+    Route::get('/posts/search', [PublicationController::class, 'search']);
     Route::get('/posts/mine', [PublicationController::class, 'authUserPosts']);
     Route::get('/posts/mine/{id_publicacao}', [PublicationController::class, 'authUserUniquePost']);
     Route::get('/user/{id}/posts', [PublicationController::class, 'anyUserPosts']);
