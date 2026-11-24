@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ProfessionalController;
 use App\Http\Controllers\Api\PublicationController;
+use App\Http\Controllers\Api\ChatProfessionalController;
+use App\Http\Controllers\Api\MessagesProfessionalController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
@@ -76,4 +78,17 @@ Route::middleware('jwt')->group(function () {
     Route::post('/reports', [ReportController::class, 'store']);
     Route::match(['put', 'patch'], '/reports/{id_denuncia}', [ReportController::class, 'update']);
     Route::get('/user/{id}/reports', [ReportController::class, 'anyUserReports']);
+
+    // Chat com Profissional
+    Route::apiResource('chats-professional', ChatProfessionalController::class)
+    ->only(['index', 'store', 'destroy']);
+
+    // Mensagens no chat com Profissional
+    Route::get('/chats-profissionais/{chatId}/messages', [MessagesProfessionalController::class, 'index']);
+
+    Route::post('/chats-profissionais/{chatId}/messages', [MessagesProfessionalController::class, 'store']);
+
+    Route::get('/chats-profissionais/{chatId}/messages/{messageId}/file/{type}', [MessagesProfessionalController::class, 'getFile'])
+    ->whereIn('type', ['anexo', 'audio'])
+    ->name('chat.message.file');
 });

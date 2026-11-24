@@ -28,28 +28,6 @@ use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
-    // GET /api/user
-    public function index() 
-    {
-        $users = User::select('id_usuario', 'nome', 'email', 'data_nasc')->get();
-        
-        return response()->json([
-            'data' => UserResource::collection($users),
-            'message' => 'Usuarios encontrados com sucesso',
-        ], 200);
-    }
-
-    // GET /api/user/{id}
-    public function show($id)
-    {
-        $user = User::findOrFail($id);
-
-        return response()->json([
-            'data' => new UserResource($user),
-            'message' => 'Usuário encontrado com sucesso!'
-        ], 200);
-    }
-    
     // api/user - POST
     public function store(StoreUserRequest $request) {
 
