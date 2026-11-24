@@ -119,6 +119,9 @@ export default function Community() {
     const [errorMessage, setErrorMessage] = useState("");
     const [reloadToken, setReloadToken] = useState(0);
 
+    const [search, setSearch] = useState("");
+    const [activeSearch, setActiveSearch] = useState("");
+
     const [professionals, setProfessionals] = useState<ProfessionalCard[]>([]);
 
     // Composer
@@ -127,6 +130,14 @@ export default function Community() {
     const [isPublishing, setIsPublishing] = useState(false);
     const [publishError, setPublishError] = useState("");
 
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setActiveSearch(search.trim());
+        }, 350);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     useEffect(() => {
         if (USE_DEMO_FEED) {
@@ -141,7 +152,7 @@ export default function Community() {
 
         void (async () => {
             try {
-                const page = await getFeed();
+                const page = await getFeed(null, activeSearch);
                 if (cancelled) return;
 
                 setPosts(page.data);
@@ -167,7 +178,7 @@ export default function Community() {
         return () => {
             cancelled = true;
         };
-    }, [reloadToken]);
+    }, [reloadToken, activeSearch]);
 
     /* ---------- Profissionais do banner ---------- */
 
@@ -229,7 +240,7 @@ export default function Community() {
         setIsLoadingMore(true);
 
         try {
-            const page = await getFeed(nextCursor);
+            const page = await getFeed(nextCursor, activeSearch);
 
             setPosts((prev) => [...prev, ...page.data]);
             setNextCursor(page.next_cursor);
@@ -304,13 +315,14 @@ export default function Community() {
                         <p className="community-subtitle">Como você está hoje?</p>
                     </div>
 
-                    {/* [SEM ROTA] GET /api/posts não aceita busca */}
                     <div className="community-search">
                         <IconSearch />
                         <input
                             type="search"
                             placeholder="Buscar"
                             aria-label="Buscar na comunidade"
+                            value={search}
+                            onChange={(event) => setSearch(event.target.value)}
                         />
                     </div>
                 </header>
@@ -436,8 +448,9 @@ export default function Community() {
 
                 {status === "ready" && posts.length === 0 && (
                     <p className="community-feedback">
-                        Nenhuma publicação ainda. Seja a primeira pessoa a
-                        compartilhar algo.
+                        {activeSearch
+                            ? `Nenhuma publicação encontrada para "${activeSearch}".`
+                            : "Nenhuma publicação ainda. Seja a primeira pessoa a compartilhar algo."}
                     </p>
                 )}
 

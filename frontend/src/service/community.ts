@@ -9,9 +9,18 @@ import type {
 } from "../type/Community";
 
 
-export async function getFeed(cursor?: string | null): Promise<FeedPage> {
-    const query = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
-    return apiFetch<FeedPage>(`/api/posts${query}`);
+export async function getFeed(
+    cursor?: string | null,
+    search?: string
+): Promise<FeedPage> {
+    const params = new URLSearchParams();
+
+    if (cursor) params.set("cursor", cursor);
+    if (search) params.set("search", search);
+
+    const query = params.toString();
+
+    return apiFetch<FeedPage>(`/api/posts${query ? `?${query}` : ""}`);
 }
 
 export async function createPost(payload: PublicationCreate): Promise<Publication> {

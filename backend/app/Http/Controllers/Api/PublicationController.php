@@ -8,6 +8,7 @@ use App\Models\Publication;
 use App\Models\User;
 use App\Http\Requests\StorePublicationRequest;
 use App\Http\Requests\UpdatePublicationRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -16,9 +17,24 @@ class PublicationController extends Controller
 {
 
     // GET /api/posts
-    public function index()
+    public function index(Request $request)
     {
+        $validated = $request->validate([
+            'search' => ['nullable', 'string', 'max:100'],
+            'cursor' => ['nullable', 'string'],
+        ]);
+
+        $search = trim($validated['search'] ?? '');
+
         $publications = Publication::with('user.profile')
+            ->when($search !== '', function ($query) use ($search) {
+                $term = '%' . addcslashes($search, '%_\\') . '%';
+
+                $query->where(function ($query) use ($term) {
+                    $query->where('titulo_publicacao', 'like', $term)
+                        ->orWhere('conteudo_publicacao', 'like', $term);
+                });
+            })
             ->orderByDesc('criado_em')
             ->orderByDesc('id_publicacao')
             ->cursorPaginate(15);
