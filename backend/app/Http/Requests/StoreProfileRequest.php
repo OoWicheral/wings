@@ -17,9 +17,9 @@ class StoreProfileRequest extends FormRequest
 
         return [
             'userId'        => 'prohibited',
-            'nameProfile'   => 'required|string|max:255',
-            'bio'           => 'nullable|string|max:500',
-            'avatar'        => 'nullable|string',
+            'nameProfile'   => 'required|string|max:20',
+            'bio'           => 'nullable|string|max:250',
+            'avatar'        => 'nullable|string|max:260',
             'statusProfile' => 'nullable|string|in:ativo,inativo',
         ];
     }
@@ -28,6 +28,8 @@ class StoreProfileRequest extends FormRequest
     {
         return [
             'nameProfile.required' => 'O nome do perfil é obrigatório.',
+            'nameProfile.max'      => 'O nome do perfil deve ter no máximo 20 caracteres.',
+            'bio.max'              => 'A bio deve ter no máximo 250 caracteres.',
         ];
     }
 }

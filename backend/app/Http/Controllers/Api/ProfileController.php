@@ -51,13 +51,19 @@ class ProfileController extends Controller
             'statusProfile' => 'status_perfil',
         ];
 
+        foreach ($fieldMap as $requestKey => $dbColumn) {
+            if (isset($validated[$requestKey])) {
+                $data[$dbColumn] = $validated[$requestKey];
+            }
+        }
+
         $data['id_usuario'] = $id;
 
         $saved = DB::transaction(function() use ($data) {
             return Profile::create($data);
         });
 
-        return reponse()->json([
+        return response()->json([
             'data'    => new ProfileResource($saved),
             'message' => 'Perfil criado com sucesso!',
         ], 201);

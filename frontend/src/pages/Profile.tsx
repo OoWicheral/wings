@@ -328,7 +328,7 @@ export default function Profile() {
 
         try {
             const created = await createProfile(user.id, {
-                nameProfile: user.name,
+                nameProfile: user.name.slice(0, 20),
                 bio: null,
             });
 
@@ -538,7 +538,7 @@ export default function Profile() {
                                         name="nameProfile"
                                         value={form.nameProfile}
                                         onChange={handleFormChange}
-                                        maxLength={255}
+                                        maxLength={20}
                                         placeholder="Como você quer ser chamado"
                                         disabled={isSaving}
                                     />
@@ -550,12 +550,12 @@ export default function Profile() {
                                         name="bio"
                                         value={form.bio}
                                         onChange={handleFormChange}
-                                        maxLength={500}
+                                        maxLength={250}
                                         rows={5}
                                         placeholder="Conte um pouco sobre você"
                                         disabled={isSaving}
                                     />
-                                    <small>{form.bio.length}/500</small>
+                                    <small>{form.bio.length}/250</small>
                                 </label>
 
                                 {saveError && (
