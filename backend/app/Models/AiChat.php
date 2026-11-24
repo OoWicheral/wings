@@ -12,6 +12,10 @@ class AiChat extends Model
     protected $keyType = 'int';
     public $timestamps = true;
     const CREATED_AT = 'criado_em'; // Altera o nome padrão das colunas timestamps
-    const UPDATED_AT = 'modificado_em';
-    
+    const UPDATED_AT = null; // Diz ao Laravel para ignorar o updated_at
+    protected $fillable = [
+        'titulo_chat_ia',
+        'id_usuario',
+        'status_chat_ia',
+    ];
 }
