@@ -39,7 +39,6 @@ export default function Header() {
 
             <nav className="header-nav" aria-label="Navegação principal">
                 <Link to="/chat">Inteligência Artificial</Link>
-                <a href="#sobre">Sobre</a>
                 <Link to="/comunidade">Comunidade</Link>
                 <Link to="/profissionais">Profissionais</Link>
             </nav>

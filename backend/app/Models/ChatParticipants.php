@@ -36,4 +36,9 @@ class ChatParticipants extends Model
     {
         return $this->belongsTo(Profile::class, 'id_usuario', 'id_usuario');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_usuario', 'id_usuario');
+    }
 }

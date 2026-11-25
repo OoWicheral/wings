@@ -17,18 +17,13 @@ class ChatProfessionalController extends Controller
         $chats = ChatProfessional::whereHas('participants', function ($query) use ($userId) {
                 $query->where('id_usuario', $userId);
             })
-            ->with(['participants' => function ($query) use ($userId) {
-                // Filtra para pegar apenas o outro participante da conversa
-                $query->where('id_usuario', '!=', $userId)
-                // Carrega somente os campos públicos da tabela perfil
-                ->with('perfil:id_usuario,nome_perfil,foto_perfil'); 
-            }])
+            ->with($this->relationsFor($userId))
             ->orderBy('criado_em', 'desc')
             ->get();
 
         return response()->json([
-            'data' => $chats,
-            'message' => count($chats) > 0 ? "Conversas encontradas" : "Você ainda não possui conversas",
+            'data' => $chats->map(fn (ChatProfessional $chat) => $this->present($chat))->values(),
+            'message' => $chats->isNotEmpty() ? 'Conversas encontradas' : 'Você ainda não possui conversas',
         ], 200);
     }
 
@@ -39,10 +34,10 @@ class ChatProfessionalController extends Controller
         ]);
 
         $senderId = auth()->id();
-        $receiverId = $request->id_sender;
+        $receiverId = (int) $request->id_sender;
 
         // Trava de segurança: impede o usuário de abrir um chat consigo mesmo
-        if ($senderId == $receiverId) {
+        if ((int) $senderId === $receiverId) {
             return response()->json([
                 'message' => 'Você não pode iniciar um chat consigo mesmo.'
             ], 422);
@@ -58,8 +53,10 @@ class ChatProfessionalController extends Controller
             ->first();
 
         if ($chatExist) {
+            $chatExist->load($this->relationsFor($senderId));
+
             return response()->json([
-                'data'    => $chatExist,
+                'data'    => $this->present($chatExist),
                 'message' => 'Chat existente recuperado.'
             ], 200);
         }
@@ -85,8 +82,10 @@ class ChatProfessionalController extends Controller
             return $chat;
         });
 
+        $newChat->load($this->relationsFor($senderId));
+
         return response()->json([
-            'data' => $newChat,
+            'data'    => $this->present($newChat),
             'message' => 'Novo chat criado com sucesso.'
         ], 201);
     }
@@ -106,6 +105,7 @@ class ChatProfessionalController extends Controller
             ], 404);
         }
 
+        // A limpeza é individual: o histórico continua existindo para o outro.
         ChatParticipants::where('id_chat_profissional', $id)
             ->where('id_usuario', $userId)
             ->update([
@@ -115,5 +115,42 @@ class ChatProfessionalController extends Controller
         return response()->json([
             'message' => 'Histórico do chat limpo.'
         ], 200);
+    }
+
+    /*
+      Carrega o "outro" participante (com nome e foto) e a última mensagem,
+      usados no resumo da lista de conversas.
+    */
+    private function relationsFor(int $userId): array
+    {
+        return [
+            'participants' => function ($query) use ($userId) {
+                $query->where('id_usuario', '!=', $userId)
+                    ->with([
+                        'user:id_usuario,nome',
+                        'perfil:id_usuario,nome_perfil,foto_perfil',
+                    ]);
+            },
+            'latestMessage',
+        ];
+    }
+
+    private function present(ChatProfessional $chat): array
+    {
+        $other = $chat->participants->first();
+
+        return [
+            'chat_id' => $chat->id_chat_profissional,
+            'created_at' => $chat->criado_em,
+            'participant' => [
+                'id' => $other?->id_usuario,
+                'name' => $other?->perfil?->nome_perfil ?: $other?->user?->nome,
+                'avatar' => $other?->perfil?->foto_perfil,
+            ],
+            'last_message' => $chat->latestMessage ? [
+                'content' => $chat->latestMessage->conteudo_msg,
+                'created_at' => $chat->latestMessage->criado_em,
+            ] : null,
+        ];
     }
 }

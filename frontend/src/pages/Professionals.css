@@ -1,0 +1,603 @@
+/* =========================================================
+   TELA DE PROFISSIONAIS
+   Sidebar compartilhada (AppSidebar) + grade de cards.
+   Medidas baseadas no frame de 1920px do Figma.
+   ========================================================= */
+
+.pros-page {
+    --pros-bg: #ffffff;
+    --pros-surface: #ededed;
+    --pros-text: #424242;
+    --pros-text-strong: #333333;
+    --pros-text-muted: #6f6f6f;
+    --pros-border: #e5e5e5;
+    --pros-accent: #d96a0b;
+    --pros-accent-dark: #c25a00;
+
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+
+    background: var(--pros-bg);
+    color: var(--pros-text);
+    font-family: var(--font-primary);
+}
+
+:where(.pros-page) button,
+:where(.pros-page) input {
+    font: inherit;
+    color: inherit;
+}
+
+:where(.pros-page) button {
+    border: 0;
+    background: transparent;
+}
+
+.pros-page svg {
+    display: block;
+    flex-shrink: 0;
+}
+
+/* =========================================================
+   FILTROS NA SIDEBAR
+   ========================================================= */
+
+.pros-filters {
+    flex: 1;
+    min-height: 0;
+
+    overflow-y: auto;
+    margin-top: 26px;
+    padding: 0 4px 0 14px;
+
+    scrollbar-width: thin;
+    scrollbar-color: #cfcfcf transparent;
+}
+
+.pros-filters-title {
+    margin: 0 0 18px;
+
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 600;
+
+    color: var(--pros-text-strong);
+}
+
+.pros-filters-label {
+    display: block;
+    margin-bottom: 8px;
+
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--pros-text-muted);
+}
+
+.pros-region-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    height: 46px;
+    padding: 0 14px;
+
+    border-radius: 10px;
+    background: #ffffff;
+    color: #9a9a9a;
+}
+
+.pros-region-search svg {
+    width: 19px;
+    height: 19px;
+}
+
+.pros-region-search input {
+    width: 100%;
+    min-width: 0;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+
+    font-size: 15px;
+    color: #4d4d4d;
+}
+
+.pros-region-search input::placeholder {
+    color: #9a9a9a;
+}
+
+.pros-region-search input::-webkit-search-cancel-button {
+    display: none;
+}
+
+.pros-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin-top: 14px;
+}
+
+.pros-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 7px 12px;
+
+    border: 1px solid #dcdcdc;
+    border-radius: 999px;
+
+    font-size: 14px;
+    font-weight: 600;
+    color: #555555;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.pros-chip:hover {
+    background: #ededed;
+}
+
+.pros-chip svg {
+    width: 14px;
+    height: 14px;
+}
+
+.pros-chip--selected {
+    border-color: var(--pros-accent);
+    background: var(--pros-accent);
+    color: #ffffff;
+}
+
+.pros-chip--selected:hover {
+    background: var(--pros-accent-dark);
+}
+
+.pros-chips-empty {
+    margin: 4px 0 0;
+
+    font-size: 14px;
+    color: var(--pros-text-muted);
+}
+
+/* Usuário no rodapé da sidebar */
+
+.pros-user {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    margin-top: 18px;
+    padding: 8px 10px 8px 14px;
+
+    border-radius: 14px;
+    color: inherit;
+    text-decoration: none;
+
+    transition: background 0.15s ease;
+}
+
+.pros-user:hover {
+    background: #efefef;
+}
+
+.pros-user-avatar {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 50%;
+    background: #555555;
+    color: #ffffff;
+}
+
+.pros-user-avatar svg {
+    width: 25px;
+    height: 25px;
+}
+
+.pros-user-name {
+    overflow: hidden;
+
+    font-size: 20px;
+    color: #444444;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   CONTEÚDO
+   ========================================================= */
+
+.pros-main {
+    flex: 1;
+    min-width: 0;
+
+    overflow-y: auto;
+    padding: 42px 84px 80px;
+
+    background: var(--pros-bg);
+    scrollbar-width: thin;
+    scrollbar-color: #cfcfcf transparent;
+}
+
+.pros-main::-webkit-scrollbar {
+    width: 8px;
+}
+
+.pros-main::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: #cfcfcf;
+}
+
+/* Cabeçalho */
+
+.pros-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+}
+
+.pros-title {
+    margin: 0;
+
+    font-family: var(--font-heading);
+    font-size: clamp(30px, 2.4vw, 42px);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+
+    color: var(--pros-text);
+}
+
+.pros-subtitle {
+    margin: 8px 0 0;
+
+    font-size: 17px;
+    color: var(--pros-text-muted);
+}
+
+.pros-search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: min(488px, 42vw);
+    height: 56px;
+    padding: 0 18px;
+
+    border-radius: 12px;
+    background: var(--pros-surface);
+    color: #8f8f8f;
+}
+
+.pros-search svg {
+    width: 22px;
+    height: 22px;
+}
+
+.pros-search input {
+    width: 100%;
+    min-width: 0;
+
+    border: 0;
+    outline: 0;
+
+    background: transparent;
+
+    font-size: 17px;
+    color: #4d4d4d;
+}
+
+.pros-search input::placeholder {
+    color: #9a9a9a;
+}
+
+.pros-search input::-webkit-search-cancel-button {
+    display: none;
+}
+
+/* =========================================================
+   GRADE DE CARDS
+   ========================================================= */
+
+.pros-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 26px;
+
+    margin-top: 40px;
+}
+
+.pros-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    padding: 34px 26px 26px;
+
+    border: 1px solid #ededed;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+
+    text-align: center;
+}
+
+.pros-avatar {
+    width: 104px;
+    height: 104px;
+    flex-shrink: 0;
+
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+
+    border-radius: 50%;
+    background: #ededed;
+    color: #6b6b6b;
+}
+
+.pros-avatar svg {
+    width: 52px;
+    height: 52px;
+}
+
+.pros-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pros-name {
+    margin: 6px 0 0;
+
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.2;
+
+    color: var(--pros-text-strong);
+    overflow-wrap: anywhere;
+}
+
+.pros-specialty {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--pros-accent-dark);
+}
+
+.pros-bio {
+    margin: 2px 0 0;
+
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--pros-text-muted);
+
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.pros-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    margin-top: 4px;
+}
+
+.pros-region {
+    padding: 5px 10px;
+
+    border-radius: 999px;
+    background: #f2f2f2;
+
+    font-size: 13px;
+    font-weight: 600;
+    color: #5a5a5a;
+}
+
+.pros-badge {
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.pros-badge--ativo {
+    background: #e7f6e9;
+    color: #1f7a34;
+}
+
+.pros-badge--pendente {
+    background: #fff3d9;
+    color: #9a6a00;
+}
+
+.pros-badge--suspenso,
+.pros-badge--inativo,
+.pros-badge--cancelado {
+    background: #fdecea;
+    color: #b3261e;
+}
+
+.pros-badge--neutro {
+    background: #f2f2f2;
+    color: #5a5a5a;
+}
+
+.pros-chat {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    width: 100%;
+    margin-top: 14px;
+    padding: 12px 18px;
+
+    border-radius: 10px;
+    background: var(--pros-accent);
+    color: #ffffff;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    transition: background 0.15s ease;
+}
+
+.pros-chat svg {
+    width: 20px;
+    height: 20px;
+}
+
+.pros-chat:hover:not(:disabled) {
+    background: var(--pros-accent-dark);
+}
+
+.pros-chat:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* =========================================================
+   ESTADOS
+   ========================================================= */
+
+.pros-feedback,
+.pros-error {
+    margin: 32px 0 0;
+}
+
+.pros-feedback {
+    font-size: 17px;
+    color: var(--pros-text-muted);
+}
+
+.pros-error {
+    padding: 12px 16px;
+
+    border-radius: 10px;
+    background: #fdecea;
+
+    font-size: 15px;
+    color: #b3261e;
+}
+
+.pros-empty {
+    margin-top: 64px;
+    text-align: center;
+}
+
+.pros-empty h2 {
+    margin: 0;
+
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 600;
+
+    color: var(--pros-text-strong);
+}
+
+.pros-empty p {
+    margin: 10px 0 0;
+
+    font-size: 16px;
+    color: var(--pros-text-muted);
+}
+
+.pros-more {
+    display: flex;
+    justify-content: center;
+
+    margin-top: 38px;
+}
+
+.pros-load-more {
+    padding: 12px 28px;
+
+    border-radius: 10px;
+    background: #f2f2f2;
+
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--pros-accent-dark);
+
+    transition: background 0.15s ease;
+}
+
+.pros-load-more:hover:not(:disabled) {
+    background: #e7e7e7;
+}
+
+.pros-load-more:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 1500px) {
+    .pros-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 1180px) {
+    .pros-main {
+        padding: 36px 48px 64px;
+    }
+
+    .pros-header {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .pros-search {
+        width: 100%;
+    }
+}
+
+@media (max-width: 1100px) {
+    .pros-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 920px) {
+    .pros-filters,
+    .pros-user-name {
+        display: none;
+    }
+
+    .pros-user {
+        justify-content: center;
+        margin-top: auto;
+        padding: 8px;
+    }
+
+    .pros-main {
+        padding: 28px 24px 56px;
+    }
+}

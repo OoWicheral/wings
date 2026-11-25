@@ -88,6 +88,10 @@ Route::middleware('jwt')->group(function () {
 
     Route::post('/chats-profissionais/{chatId}/messages', [MessagesProfessionalController::class, 'store']);
 
+    Route::match(['put', 'patch'], '/chats-profissionais/{chatId}/messages/{messageId}', [MessagesProfessionalController::class, 'update']);
+
+    Route::delete('/chats-profissionais/{chatId}/messages/{messageId}', [MessagesProfessionalController::class, 'destroy']);
+
     Route::get('/chats-profissionais/{chatId}/messages/{messageId}/file/{type}', [MessagesProfessionalController::class, 'getFile'])
     ->whereIn('type', ['anexo', 'audio'])
     ->name('chat.message.file');

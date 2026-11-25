@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import type { ReactNode } from "react";
 import "./AppSidebar.css";
 
 /*
@@ -13,6 +14,8 @@ type ActiveItem = "home" | "comunidade" | "profissionais" | "perfil";
 
 interface AppSidebarProps {
     active?: ActiveItem;
+    /* Conteúdo extra entre a navegação e o rodapé (ex.: filtros). */
+    children?: ReactNode;
 }
 
 function IconPanel() {
@@ -71,7 +74,7 @@ function IconUser() {
     );
 }
 
-export default function AppSidebar({ active }: AppSidebarProps) {
+export default function AppSidebar({ active, children }: AppSidebarProps) {
     const itemClass = (item: ActiveItem) =>
         `app-sidebar-item${active === item ? " app-sidebar-item--active" : ""}`;
 
@@ -115,6 +118,8 @@ export default function AppSidebar({ active }: AppSidebarProps) {
                     <span className="app-sidebar-label">Perfil</span>
                 </Link>
             </nav>
+
+            {children}
         </aside>
     );
 }

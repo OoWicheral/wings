@@ -1,0 +1,283 @@
+
+
+
+.profile-grid > .professional-card {
+    grid-column: 1 / -1;
+}
+
+
+
+.professional-status {
+    margin-left: auto;
+
+    padding: 5px 12px;
+
+    border-radius: 999px;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.professional-status--ativo {
+    background: #e7f6e9;
+    color: #1f7a34;
+}
+
+.professional-status--pendente {
+    background: #fff3d9;
+    color: #9a6a00;
+}
+
+/* Texto e lista de benefícios */
+
+.professional-text {
+    margin: 0;
+
+    font-size: 16px;
+    line-height: 1.6;
+    color: #555555;
+}
+
+.professional-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.professional-list li {
+    padding: 7px 14px;
+
+    border-radius: 999px;
+    background: #f6f6f6;
+
+    font-size: 14px;
+    color: var(--profile-text-muted);
+}
+
+/* Botão de ação do cartão */
+
+.professional-cta {
+    align-self: flex-start;
+    margin-top: 22px;
+}
+
+/* Resumo do cadastro já feito */
+
+.professional-data-list {
+    margin: 0;
+}
+
+.professional-data-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+
+    padding: 13px 0;
+
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.professional-data-row:first-child {
+    padding-top: 0;
+}
+
+.professional-data-row:last-child {
+    border-bottom: 0;
+}
+
+.professional-data-row dt {
+    font-size: 15px;
+    color: var(--profile-text-muted);
+}
+
+.professional-data-row dd {
+    margin: 0;
+
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--profile-text-strong);
+    text-align: right;
+}
+
+.professional-docs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.professional-docs a {
+    padding: 5px 12px;
+
+    border-radius: 999px;
+    background: #fff1e7;
+
+    color: var(--profile-accent-dark);
+    font-size: 13px;
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+.professional-docs a:hover {
+    background: #ffe4d1;
+}
+
+/* Formulário */
+
+.professional-form {
+    margin-top: 4px;
+}
+
+.professional-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.professional-form select {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 11px 14px;
+
+    border: 1px solid var(--profile-border);
+    border-radius: 12px;
+
+    background: #fbfbfb;
+    color: var(--profile-text-strong);
+    font-family: inherit;
+    font-size: 15px;
+
+    outline: none;
+}
+
+.professional-form select:focus {
+    border-color: var(--profile-accent);
+    background: #ffffff;
+}
+
+.professional-form select:disabled {
+    opacity: 0.65;
+}
+
+/* Campo de arquivo */
+
+.professional-file {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 14px;
+
+    border: 1px dashed #d8d8d8;
+    border-radius: 12px;
+
+    background: #fbfbfb;
+    color: var(--profile-text-muted);
+}
+
+.professional-file svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.professional-file input {
+    flex: 1;
+    min-width: 0;
+
+    border: 0;
+    background: transparent;
+
+    font-size: 14px;
+}
+
+.professional-file input::file-selector-button {
+    margin-right: 10px;
+
+    padding: 7px 12px;
+
+    border: 1px solid var(--profile-border);
+    border-radius: 9px;
+
+    background: #ffffff;
+    color: var(--profile-text);
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.professional-file input:disabled {
+    opacity: 0.65;
+}
+
+/* Checkbox de autorização do e-Psi */
+
+.professional-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--profile-text-muted);
+}
+
+.professional-check input {
+    width: 17px;
+    height: 17px;
+    margin: 1px 0 0;
+
+    accent-color: var(--profile-accent);
+}
+
+/* Mensagens */
+
+.professional-feedback {
+    margin: 0;
+
+    font-size: 15px;
+    color: var(--profile-text-muted);
+}
+
+.professional-success {
+    margin: 0 0 14px;
+
+    padding: 11px 14px;
+
+    border-radius: 12px;
+    background: #e7f6e9;
+
+    font-size: 14px;
+    color: #1f7a34;
+}
+
+/* Responsivo */
+
+@media (max-width: 640px) {
+    .professional-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .professional-data-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .professional-data-row dd {
+        text-align: left;
+    }
+
+    .professional-docs {
+        justify-content: flex-start;
+    }
+}

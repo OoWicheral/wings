@@ -21,6 +21,12 @@ class MessagesProfessional extends Model
         'id_chat_profissional',
     ];
 
+    // Os caminhos internos não vão para o cliente; só as URLs assinadas abaixo.
+    protected $hidden = [
+        'anexo_msg',
+        'audio',
+    ];
+
     protected $appends = ['anexo_url', 'audio_url'];
 
    public function getAnexoUrlAttribute()

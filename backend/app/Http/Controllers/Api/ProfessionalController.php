@@ -7,6 +7,7 @@ use App\Http\Requests\StoreProfessionalRequest;
 use App\Http\Requests\UpdateProfessionalRequest;
 use App\Http\Resources\ProfessionalResource;
 use App\Models\Professional;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -14,12 +15,43 @@ use Throwable;
 
 class ProfessionalController extends Controller
 {
-    // GET /api/professionals
-    public function index()
+    // GET /api/professionals?search=&region=&page=
+    public function index(Request $request)
     {
-        $professionals = Professional::orderBy('id_usuario')->paginate(15);
+        $search = trim((string) $request->query('search', ''));
 
-        return ProfessionalResource::collection($professionals);
+        $regions = collect(explode(',', (string) $request->query('region', '')))
+            ->map(fn ($region) => strtoupper(trim($region)))
+            ->filter(fn ($region) => $region !== '')
+            ->unique()
+            ->values();
+
+        $query = Professional::query()
+            ->with([
+                'user:id_usuario,nome',
+                'profile:id_usuario,nome_perfil,foto_perfil,bio_perfil',
+            ])
+            ->orderBy('id_usuario');
+
+        // Busca por nome (perfil ou conta) e por número do CRP.
+        if ($search !== '') {
+            $term = '%' . addcslashes($search, '%_\\') . '%';
+
+            $query->where(function ($where) use ($term) {
+                $where->where('crp_num', 'like', $term)
+                    ->orWhereHas('user', fn ($user) => $user->where('nome', 'like', $term))
+                    ->orWhereHas('profile', fn ($profile) => $profile->where('nome_perfil', 'like', $term));
+            });
+        }
+
+        // O banco não guarda cidade; a região do CRP (UF) é o filtro real.
+        if ($regions->isNotEmpty()) {
+            $query->whereIn('crp_regiao', $regions->all());
+        }
+
+        return ProfessionalResource::collection(
+            $query->paginate(12)->withQueryString()
+        );
     }
 
     // GET /api/user/{id}/professional

@@ -100,18 +100,10 @@ export interface CommentPage {
     };
 }
 
-export interface Professional {
-    id: number;
-    crpRegion: string | null;
-    crpNumber: string | null;
-    cip: string | null;
-    crpRegularity: string | null;
-    ePsi: string | null;
-    registerStatus: string | null;
-    certificateExpiring: string | null;
-    epsiAuth: boolean;
-}
+/* O cadastro profissional vive em type/Professional.ts. */
+export type {
+    Professional,
+    ProfessionalFormPayload,
+    ProfessionalPage,
+} from "./Professional";
 
-export interface ProfessionalPage {
-    data: Professional[];
-}

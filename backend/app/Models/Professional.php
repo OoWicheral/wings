@@ -29,4 +29,26 @@ class Professional extends Model
     {
         return $this->belongsTo(User::class, 'id_usuario', 'id_usuario');
     }
+
+    public function profile(): BelongsTo
+    {
+        return $this->belongsTo(Profile::class, 'id_usuario', 'id_usuario');
+    }
+
+    /*
+      O banco ao vivo nomeia a coluna como data_expira_certified, enquanto o
+      db/wing.sql usa data_expira_certificado. Este par accessor/mutator mantém
+      o restante do código falando o nome do schema sem exigir um ALTER TABLE.
+    */
+    public function getDataExpiraCertificadoAttribute(): ?string
+    {
+        return $this->attributes['data_expira_certified']
+            ?? $this->attributes['data_expira_certificado']
+            ?? null;
+    }
+
+    public function setDataExpiraCertificadoAttribute($value): void
+    {
+        $this->attributes['data_expira_certified'] = $value;
+    }
 }

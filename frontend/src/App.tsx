@@ -6,6 +6,8 @@ import type { AuthMode } from './hooks/use-auth-modal';
 import AuthModal from './pages/AuthModal';
 import Home from './pages/Home';
 import ChatIA from './pages/Chat-ia';
+import ChatProfessional from './pages/Chat-professional';
+import Professionals from './pages/Professionals';
 import Profile from './pages/Profile';
 import Community from './pages/Community';
 
@@ -32,7 +34,10 @@ export default function App() {
             <Route path="/cadastro" element={<AuthModalRoute mode="signup" />} />
             <Route path="/login" element={<AuthModalRoute mode="login" />} />
             <Route path="/chat" element={<ChatIA />} />
+            <Route path="/chat-profissional" element={<ChatProfessional />} />
+            <Route path="/chat-profissional/:chatId" element={<ChatProfessional />} />
             <Route path="/comunidade" element={<Community />} />
+            <Route path="/profissionais" element={<Professionals />} />
             <Route path="/perfil" element={<Profile />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

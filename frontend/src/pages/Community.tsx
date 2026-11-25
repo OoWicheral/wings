@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 
 import AppSidebar from "../components/AppSidebar";
 import { useAuth } from "../hooks/use-auth";
 import { ApiError } from "../service/api";
-import { createComment, createPost, getAuthor, getComments, getFeed, getProfessionals } from "../service/community";
+import { createComment, createPost, getComments, getFeed, getProfessionals } from "../service/community";
+import { startProfessionalChat } from "../service/professional-chat";
 import { avatarUrl, formatRelativeTime } from "../utils/format";
 import type { Comment, Publication } from "../type/Community";
 
@@ -314,6 +316,7 @@ function CommentPanel({ postId, onCreated }: { postId: number; onCreated: () => 
 
 export default function Community() {
     const { user } = useAuth();
+    const navigate = useNavigate();
 
     const [status, setStatus] = useState<FeedStatus>("loading");
     const [posts, setPosts] = useState<Publication[]>([]);
@@ -327,6 +330,30 @@ export default function Community() {
     const [activeSearch, setActiveSearch] = useState("");
 
     const [openCommentsId, setOpenCommentsId] = useState<number | null>(null);
+
+    /* Abrir conversa com um profissional do banner */
+    const [openingProfessionalId, setOpeningProfessionalId] = useState<number | null>(null);
+    const [professionalChatError, setProfessionalChatError] = useState("");
+
+    async function handleProfessionalChat(professionalId: number) {
+        if (openingProfessionalId !== null) return;
+
+        setOpeningProfessionalId(professionalId);
+        setProfessionalChatError("");
+
+        try {
+            const chat = await startProfessionalChat(professionalId);
+            navigate(`/chat-profissional/${chat.chat_id}`);
+        } catch (error) {
+            setProfessionalChatError(
+                error instanceof Error
+                    ? error.message
+                    : "Não foi possível abrir a conversa."
+            );
+        } finally {
+            setOpeningProfessionalId(null);
+        }
+    }
 
     const [professionals, setProfessionals] = useState<ProfessionalCard[]>([]);
 
@@ -398,35 +425,22 @@ export default function Community() {
 
         void (async () => {
             try {
-                const list = await getProfessionals();
-                const firstThree = list.slice(0, 3);
+                const page = await getProfessionals();
+                const firstThree = page.data.slice(0, 3);
 
-                const cards = await Promise.all(
-                    firstThree.map(async (professional) => {
-                        const registration =
-                            professional.crpRegion && professional.crpNumber
-                                ? `CRP ${professional.crpRegion}/${professional.crpNumber}`
-                                : null;
+                const cards = firstThree.map((professional) => {
+                    const registration =
+                        professional.crpRegion && professional.crpNumber
+                            ? `CRP ${professional.crpRegion}/${professional.crpNumber}`
+                            : null;
 
-                        try {
-                            const author = await getAuthor(professional.id);
-
-                            return {
-                                id: professional.id,
-                                name: author.name,
-                                avatar: author.avatar,
-                                registration,
-                            };
-                        } catch {
-                            return {
-                                id: professional.id,
-                                name: "Profissional",
-                                avatar: null,
-                                registration,
-                            };
-                        }
-                    })
-                );
+                    return {
+                        id: professional.id,
+                        name: professional.name ?? "Profissional",
+                        avatar: professional.avatar,
+                        registration,
+                    };
+                });
 
                 if (!cancelled) setProfessionals(cards);
             } catch {
@@ -570,11 +584,17 @@ export default function Community() {
                                             </span>
                                         </span>
 
-                                        {/* [LIGAR] Chat com profissional */}
+                                        {/* Abre (ou recupera) a conversa com o profissional */}
                                         <button
                                             type="button"
                                             className="community-pro-chat"
                                             aria-label={`Conversar com ${professional.name}`}
+                                            onClick={() =>
+                                                void handleProfessionalChat(
+                                                    professional.id
+                                                )
+                                            }
+                                            disabled={openingProfessionalId !== null}
                                         >
                                             <IconMessage />
                                         </button>
@@ -588,10 +608,17 @@ export default function Community() {
                         type="button"
                         className="community-hero-arrow"
                         aria-label="Ver todos os profissionais"
+                        onClick={() => navigate("/profissionais")}
                     >
                         <IconArrowRight />
                     </button>
                 </section>
+
+                {professionalChatError && (
+                    <p className="community-error" role="alert">
+                        {professionalChatError}
+                    </p>
+                )}
 
                 <form className="community-composer" onSubmit={handlePublish} noValidate>
                     <div className="community-composer-head">

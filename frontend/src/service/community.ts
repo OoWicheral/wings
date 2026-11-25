@@ -4,11 +4,10 @@ import type {
     Comment,
     CommentPage,
     FeedPage,
-    Professional,
-    ProfessionalPage,
     Publication,
     PublicationCreate,
 } from "../type/Community";
+import type { ProfessionalPage } from "../type/Professional";
 
 
 export async function getFeed(
@@ -102,7 +101,18 @@ export async function getAuthor(userId: number): Promise<AuthorSummary> {
 
 
 
-export async function getProfessionals(): Promise<Professional[]> {
-    const res = await apiFetch<ProfessionalPage>("/api/professionals");
-    return res.data;
+export async function getProfessionals(
+    params: { search?: string; region?: string; page?: number } = {}
+): Promise<ProfessionalPage> {
+    const query = new URLSearchParams();
+
+    if (params.search) query.set("search", params.search);
+    if (params.region) query.set("region", params.region);
+    if (params.page && params.page > 1) query.set("page", String(params.page));
+
+    const qs = query.toString();
+
+    return apiFetch<ProfessionalPage>(
+        `/api/professionals${qs ? `?${qs}` : ""}`
+    );
 }

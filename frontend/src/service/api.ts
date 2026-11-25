@@ -14,11 +14,17 @@ export class ApiError extends Error {
 export async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
     const token = localStorage.getItem("access_token");
 
+    /*
+      Com FormData o browser precisa montar o próprio Content-Type (com o
+      boundary do multipart). Forçar application/json quebraria o upload.
+    */
+    const isFormData = options.body instanceof FormData;
+
     const response = await fetch(`${API_URL}${path}`, {
         ...options,
         headers: {
             Accept: "application/json",
-            "Content-Type": "application/json",
+            ...(isFormData ? {} : { "Content-Type": "application/json" }),
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...options.headers,
         },

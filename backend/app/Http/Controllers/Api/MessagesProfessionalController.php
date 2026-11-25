@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProfessionalMessageResource;
 use App\Models\ChatParticipants;
 use App\Models\MessagesProfessional;
 use Illuminate\Support\Facades\Storage;
@@ -73,19 +74,22 @@ class MessagesProfessionalController extends Controller
             ->orderBy('id_msg', 'desc') 
             ->cursorPaginate($perPage);
 
-        return response()->json($messages, 200);
+        // Mesmo envelope do chat da IA: { data, links, meta.next_cursor }.
+        return ProfessionalMessageResource::collection($messages);
     }
 
     public function store(Request $request, $chatId)
     {
         $request->validate([
-            'conteudo_msg' => 'nullable|string|max:5000|required_without_all:anexo_msg,audio',
+            // A coluna mensagem_chat_profissional.conteudo_msg é VARCHAR(1000).
+            'conteudo_msg' => 'nullable|string|max:1000|required_without_all:anexo_msg,audio',
             // Aceita imagens e PDFs até 10MB (10240 KB)
             'anexo_msg'    => 'nullable|file|mimes:jpg,jpeg,png,webp,pdf,doc,docx|max:10240|required_without_all:conteudo_msg,audio',
             // Aceita áudios até 10MB
             'audio'        => 'nullable|file|mimes:mp3,wav,ogg,m4a,webm|max:10240|required_without_all:conteudo_msg,anexo_msg',
         ], [
             'conteudo_msg.required_without_all' => 'Envie um texto, um anexo ou um áudio para registrar a mensagem.',
+            'conteudo_msg.max'                  => 'A mensagem pode ter no máximo 1000 caracteres.',
             'anexo_msg.required_without_all'    => 'Envie um texto, um anexo ou um áudio para registrar a mensagem.',
             'audio.required_without_all'        => 'Envie um texto, um anexo ou um áudio para registrar a mensagem.',
         ]);
@@ -123,9 +127,80 @@ class MessagesProfessionalController extends Controller
             'id_chat_profissional' => $chatId,
         ]);
 
+        return (new ProfessionalMessageResource($message))
+            ->additional(['message' => 'Mensagem enviada com sucesso.'])
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    public function update(Request $request, $chatId, $messageId)
+    {
+        $request->validate([
+            'conteudo_msg' => 'required|string|max:1000',
+        ], [
+            'conteudo_msg.required' => 'É necessário enviar um texto para editar a mensagem.',
+            'conteudo_msg.max'      => 'A mensagem pode ter no máximo 1000 caracteres.',
+        ]);
+
+        $message = $this->findOwnMessage($chatId, $messageId);
+
+        if (!$message) {
+            return response()->json([
+                'message' => 'Mensagem não encontrada ou acesso negado.'
+            ], 404);
+        }
+
+        $message->update([
+            'conteudo_msg' => $request->input('conteudo_msg'),
+        ]);
+
+        return (new ProfessionalMessageResource($message->refresh()))
+            ->additional(['message' => 'Mensagem atualizada com sucesso.']);
+    }
+
+    public function destroy($chatId, $messageId)
+    {
+        $message = $this->findOwnMessage($chatId, $messageId);
+
+        if (!$message) {
+            return response()->json([
+                'message' => 'Mensagem não encontrada ou acesso negado.'
+            ], 404);
+        }
+
+        // Remove também os arquivos enviados junto da mensagem.
+        foreach ([$message->anexo_msg, $message->audio] as $path) {
+            if ($path) {
+                Storage::disk('local')->delete($path);
+            }
+        }
+
+        $message->delete();
+
         return response()->json([
-            'data'    => $message,
-            'message' => 'Mensagem enviada com sucesso.'
-        ], 201);
+            'message' => 'Mensagem excluída com sucesso.'
+        ], 200);
+    }
+
+    /*
+      Busca uma mensagem do próprio usuário dentro do chat. Devolve null tanto
+      quando o chat não é dele quanto quando a mensagem é de outra pessoa.
+    */
+    private function findOwnMessage($chatId, $messageId): ?MessagesProfessional
+    {
+        $userId = auth()->id();
+
+        $isParticipant = ChatParticipants::where('id_chat_profissional', $chatId)
+            ->where('id_usuario', $userId)
+            ->exists();
+
+        if (!$isParticipant) {
+            return null;
+        }
+
+        return MessagesProfessional::where('id_chat_profissional', $chatId)
+            ->where('id_msg', $messageId)
+            ->where('id_usuario', $userId)
+            ->first();
     }
 }

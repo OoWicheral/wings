@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import ProfessionalCard from "../components/ProfessionalCard";
 import { useAuth } from "../hooks/use-auth";
 import { ApiError } from "../service/api";
 import { createProfile, getProfile, getUser, updateProfile } from "../service/profile";
@@ -663,6 +664,9 @@ export default function Profile() {
                             </div>
                         </div>
                     </section>
+
+                    {/* Cadastro como profissional (self-service dentro do perfil). */}
+                    <ProfessionalCard userId={user.id} />
                 </div>
 
                 <p className="profile-note">
