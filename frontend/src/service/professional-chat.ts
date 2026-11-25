@@ -46,17 +46,31 @@ export async function listProfessionalMessages(
 
 export async function sendProfessionalMessage(
     chatId: number,
-    content: string
+    content: string,
+    attachment?: File | null
 ): Promise<ProfessionalMessage> {
+    const body = new FormData();
+    if (content.trim()) body.append("conteudo_msg", content.trim());
+    if (attachment) body.append("anexo_msg", attachment);
+
     const res = await apiFetch<{ data: ProfessionalMessage; message: string }>(
         `/api/chats-profissionais/${chatId}/messages`,
         {
             method: "POST",
-            body: JSON.stringify({ conteudo_msg: content }),
+            body,
         }
     );
 
     return res.data;
+}
+
+export async function openProfessionalMessageFile(url: string): Promise<string> {
+    const token = localStorage.getItem("access_token");
+    const response = await fetch(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    if (!response.ok) throw new Error("Não foi possível abrir o anexo.");
+    return URL.createObjectURL(await response.blob());
 }
 
 export async function updateProfessionalMessage(

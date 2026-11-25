@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import type { FormEvent } from "react";
 
 import { IconArrowUp, IconMic, IconPlus } from "./ChatIcons";
@@ -11,11 +12,13 @@ interface ChatComposerProps {
     placeholder?: string;
     ariaLabel?: string;
     maxLength?: number;
+    attachment?: File | null;
+    onAttachmentChange?: (file: File | null) => void;
 }
 
 /*
   Campo de envio compartilhado pelos chats.
-  Anexo e áudio ficam desabilitados: ainda não há upload no fluxo de chat.
+  O anexo pode ser habilitado pelos chats que aceitam upload.
 */
 export default function ChatComposer({
     multiline = false,
@@ -26,7 +29,37 @@ export default function ChatComposer({
     placeholder = "Diga ao Caco",
     ariaLabel = "Mensagem para o Caco",
     maxLength = 1000,
+    attachment = null,
+    onAttachmentChange,
 }: ChatComposerProps) {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const attachmentPicker = onAttachmentChange ? (
+        <>
+            <input
+                ref={fileInputRef}
+                className="chat-composer-file"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,.pdf,.doc,.docx"
+                onChange={(event) => onAttachmentChange(event.target.files?.[0] ?? null)}
+                aria-label="Selecionar imagem ou documento"
+            />
+            <button
+                type="button"
+                className="chat-composer-add"
+                aria-label="Adicionar anexo"
+                title="Adicionar imagem ou documento"
+                disabled={disabled}
+                onClick={() => fileInputRef.current?.click()}
+            >
+                <IconPlus />
+            </button>
+        </>
+    ) : (
+        <button type="button" className="chat-composer-add" aria-label="Adicionar anexo" title="Anexos indisponíveis" disabled>
+            <IconPlus />
+        </button>
+    );
+
     if (multiline) {
         return (
             <form className="chat-composer chat-composer--multiline" onSubmit={onSubmit}>
@@ -42,15 +75,14 @@ export default function ChatComposer({
                 />
 
                 <div className="chat-composer-bottom">
-                    <button
-                        type="button"
-                        className="chat-composer-add"
-                        aria-label="Adicionar anexo"
-                        title="Anexos em breve"
-                        disabled
-                    >
-                        <IconPlus />
-                    </button>
+                    {attachmentPicker}
+
+                    {attachment && (
+                        <span className="chat-composer-attachment">
+                            {attachment.name}
+                            <button type="button" aria-label="Remover anexo" onClick={() => onAttachmentChange?.(null)}>×</button>
+                        </span>
+                    )}
 
                     <div className="chat-composer-actions">
                         <button
@@ -79,15 +111,7 @@ export default function ChatComposer({
 
     return (
         <form className="chat-composer" onSubmit={onSubmit}>
-            <button
-                type="button"
-                className="chat-composer-add"
-                aria-label="Adicionar anexo"
-                title="Anexos em breve"
-                disabled
-            >
-                <IconPlus />
-            </button>
+            {attachmentPicker}
 
             <input
                 type="text"

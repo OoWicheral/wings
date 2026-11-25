@@ -55,6 +55,7 @@ export interface Publication {
 export interface PublicationCreate {
     title: string;
     content: string;
+    image?: File | null;
 }
 
 /* Envelope da paginação por cursor do Laravel (o cursor fica em meta). */

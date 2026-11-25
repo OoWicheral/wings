@@ -9,6 +9,8 @@ use App\Http\Requests\UpdateProfileRequest;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreProfileRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -47,7 +49,6 @@ class ProfileController extends Controller
         $fieldMap = [
             'nameProfile'   => 'nome_perfil',
             'bio'           => 'bio_perfil',
-            'avatar'        => 'foto_perfil',
             'statusProfile' => 'status_perfil',
         ];
 
@@ -55,6 +56,19 @@ class ProfileController extends Controller
             if (isset($validated[$requestKey])) {
                 $data[$dbColumn] = $validated[$requestKey];
             }
+        }
+
+        // Foto de perfil: arquivo enviado ou caminho já existente.
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('perfil', 'public');
+
+            if ($avatarPath === false) {
+                abort(500, 'Não foi possível salvar a foto de perfil.');
+            }
+
+            $data['foto_perfil'] = $avatarPath;
+        } elseif (isset($validated['avatar']) && is_string($validated['avatar'])) {
+            $data['foto_perfil'] = $validated['avatar'];
         }
 
         $data['id_usuario'] = $id;
@@ -79,7 +93,6 @@ class ProfileController extends Controller
         $fieldMap = [
             'nameProfile'   => 'nome_perfil',
             'bio'           => 'bio_perfil',
-            'avatar'        => 'foto_perfil',
             'statusProfile' => 'status_perfil',
         ];
 
@@ -89,12 +102,45 @@ class ProfileController extends Controller
             }
         }
 
-        $saved = DB::transaction(function() use ($profile, $data) {
-            if (!empty($data)) {
-                $profile->update($data);
+        $oldAvatarPath = $profile->foto_perfil;
+        $newAvatarPath = null;
+
+        // Foto de perfil: arquivo enviado ou caminho já existente.
+        if ($request->hasFile('avatar')) {
+            $newAvatarPath = $request->file('avatar')->store('perfil', 'public');
+
+            if ($newAvatarPath === false) {
+                abort(500, 'Não foi possível salvar a foto de perfil.');
             }
-            return $profile;
-        });
+
+            $data['foto_perfil'] = $newAvatarPath;
+        } elseif (isset($validated['avatar']) && is_string($validated['avatar'])) {
+            $data['foto_perfil'] = $validated['avatar'];
+        }
+
+        try {
+            $saved = DB::transaction(function() use ($profile, $data) {
+                if (!empty($data)) {
+                    $profile->update($data);
+                }
+                return $profile->refresh();
+            });
+        } catch (\Throwable $exception) {
+            if ($newAvatarPath !== null) {
+                Storage::disk('public')->delete($newAvatarPath);
+            }
+
+            throw $exception;
+        }
+
+        // Remove a foto antiga quando ela foi substituída.
+        if ($newAvatarPath !== null && $oldAvatarPath !== null
+            && !Storage::disk('public')->delete($oldAvatarPath)) {
+            Log::warning('Não foi possível remover a foto de perfil anterior.', [
+                'user_id' => $id,
+                'avatar_path' => $oldAvatarPath,
+            ]);
+        }
 
         return response()->json([
             'data'    => new ProfileResource($saved),

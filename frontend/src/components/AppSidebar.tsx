@@ -10,7 +10,7 @@ import "./AppSidebar.css";
   para este componente depois, sem pressa.
 */
 
-type ActiveItem = "home" | "comunidade" | "profissionais" | "perfil";
+type ActiveItem = "home" | "comunidade" | "profissionais" | "perfil" | "conversas";
 
 interface AppSidebarProps {
     active?: ActiveItem;
@@ -74,6 +74,14 @@ function IconUser() {
     );
 }
 
+function IconConversation() {
+    return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+            <path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8Z" />
+        </svg>
+    );
+}
+
 export default function AppSidebar({ active, children }: AppSidebarProps) {
     const itemClass = (item: ActiveItem) =>
         `app-sidebar-item${active === item ? " app-sidebar-item--active" : ""}`;
@@ -101,6 +109,11 @@ export default function AppSidebar({ active, children }: AppSidebarProps) {
                 <Link to="/" className={itemClass("home")}>
                     <IconHome />
                     <span className="app-sidebar-label">Home</span>
+                </Link>
+
+                <Link to="/chat-profissional" className={itemClass("conversas")}>
+                    <IconConversation />
+                    <span className="app-sidebar-label">Conversas</span>
                 </Link>
 
                 <Link to="/comunidade" className={itemClass("comunidade")}>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AvatarUpload;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProfileRequest extends FormRequest
@@ -16,7 +17,7 @@ class UpdateProfileRequest extends FormRequest
         return [
             'nameProfile'   => 'nullable|string|max:20',
             'bio'           => 'nullable|string|max:250',
-            'avatar'        => 'nullable|string|max:260',
+            'avatar'        => ['nullable', new AvatarUpload()],
             'statusProfile' => 'nullable|string|in:ativo,inativo',
         ];
     }

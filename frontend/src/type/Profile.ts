@@ -11,6 +11,6 @@ export interface Profile {
 export interface ProfilePayload {
     nameProfile: string;
     bio?: string | null;
-    avatar?: string | null;
+    avatar?: string | File | null;
     statusProfile?: "ativo" | "inativo";
 }

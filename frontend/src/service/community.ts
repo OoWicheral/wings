@@ -25,9 +25,13 @@ export async function getFeed(
 }
 
 export async function createPost(payload: PublicationCreate): Promise<Publication> {
+    const body = new FormData();
+    body.append("title", payload.title);
+    body.append("content", payload.content);
+    if (payload.image) body.append("image", payload.image);
     const res = await apiFetch<{ data: Publication; message: string }>("/api/posts", {
         method: "POST",
-        body: JSON.stringify(payload),
+        body,
     });
 
     return res.data;

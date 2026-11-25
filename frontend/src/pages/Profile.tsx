@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -251,7 +251,11 @@ export default function Profile() {
 
     // Modo de edição
     const [isEditing, setIsEditing] = useState(false);
-    const [form, setForm] = useState({ nameProfile: "", bio: "" });
+    const [form, setForm] = useState({ nameProfile: "", bio: "", avatar: null as File | null });
+    const selectedAvatarUrl = useMemo(
+        () => (form.avatar ? URL.createObjectURL(form.avatar) : null),
+        [form.avatar]
+    );
     const [isSaving, setIsSaving] = useState(false);
     const [saveError, setSaveError] = useState("");
 
@@ -358,6 +362,7 @@ export default function Profile() {
         setForm({
             nameProfile: profile.nameProfile ?? "",
             bio: profile.bio ?? "",
+            avatar: null,
         });
         setSaveError("");
         setIsEditing(true);
@@ -394,6 +399,7 @@ export default function Profile() {
             const updated = await updateProfile(user.id, {
                 nameProfile,
                 bio: form.bio.trim() || null,
+                avatar: form.avatar,
             });
 
             // A resposta do PATCH é a fonte da verdade.
@@ -486,7 +492,7 @@ export default function Profile() {
 
                     <div className="profile-hero-body">
                         <div className="profile-avatar" aria-hidden="true">
-                            {avatar ? <img src={avatar} alt="" /> : initial}
+                            {selectedAvatarUrl || avatar ? <img src={selectedAvatarUrl ?? avatar ?? ""} alt="" /> : initial}
                         </div>
 
                         <div className="profile-identity">
@@ -532,6 +538,15 @@ export default function Profile() {
 
                         {isEditing ? (
                             <form className="profile-form" onSubmit={handleSave} noValidate>
+                                <label className="profile-field">
+                                    <span>Foto de perfil</span>
+                                    <input
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/webp"
+                                        onChange={(event) => setForm((prev) => ({ ...prev, avatar: event.target.files?.[0] ?? null }))}
+                                        disabled={isSaving}
+                                    />
+                                </label>
                                 <label className="profile-field">
                                     <span>Nome do perfil</span>
                                     <input

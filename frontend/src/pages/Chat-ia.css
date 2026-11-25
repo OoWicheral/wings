@@ -603,6 +603,19 @@
     transition: background 0.15s ease;
 }
 
+.chat-composer-file {
+    display: none;
+}
+
+.chat-composer-attachment {
+    max-width: 40%;
+    overflow: hidden;
+    color: var(--chat-text-muted);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .chat-composer-add:hover {
     background: #f2f2f2;
 }

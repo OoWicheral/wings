@@ -389,6 +389,11 @@ export default function ChatIA() {
                         <span className="chat-nav-label">Home</span>
                     </Link>
 
+                    <Link to="/chat-profissional" className="chat-nav-item">
+                        <IconUser />
+                        <span className="chat-nav-label">Conversas</span>
+                    </Link>
+
                     <Link to="/comunidade" className="chat-nav-item">
                         <IconCommunity />
                         <span className="chat-nav-label">Comunidade</span>

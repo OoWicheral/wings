@@ -357,6 +357,29 @@
     background: #ffffff;
 }
 
+.community-image-picker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    color: var(--community-accent);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.community-image-picker input {
+    max-width: 220px;
+    color: #777;
+    font-size: 12px;
+}
+
+.community-image-preview {
+    width: min(100%, 260px);
+    max-height: 180px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
 .community-composer-title,
 .community-composer-input {
     width: 100%;

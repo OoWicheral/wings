@@ -149,6 +149,7 @@ class ChatProfessionalController extends Controller
             ],
             'last_message' => $chat->latestMessage ? [
                 'content' => $chat->latestMessage->conteudo_msg,
+                'anexo_url' => $chat->latestMessage->anexo_url,
                 'created_at' => $chat->latestMessage->criado_em,
             ] : null,
         ];

@@ -103,6 +103,126 @@
     height: 22px;
 }
 
+.pro-inbox {
+    width: min(920px, 100%);
+    margin: auto;
+    padding: clamp(28px, 6vw, 76px);
+}
+
+.pro-inbox-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--chat-border);
+}
+
+.pro-inbox-heading p {
+    margin: 0 0 10px;
+    color: var(--chat-accent-dark);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+}
+
+.pro-inbox-heading h1 {
+    margin: 0;
+    color: var(--chat-text-strong);
+    font-size: clamp(28px, 4vw, 40px);
+}
+
+.pro-inbox-heading span,
+.pro-inbox-card-copy span {
+    color: var(--chat-text-muted);
+    font-size: 14px;
+}
+
+.pro-inbox-heading a,
+.pro-inbox-empty a {
+    padding: 12px 18px;
+    border-radius: 10px;
+    background: var(--chat-accent);
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.pro-inbox-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.pro-inbox-card {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px;
+    border: 1px solid var(--chat-border);
+    border-radius: 14px;
+    background: white;
+    text-align: left;
+    cursor: pointer;
+}
+
+.pro-inbox-card:hover {
+    border-color: #e1a774;
+    background: #fffcf9;
+}
+
+.pro-inbox-card-copy {
+    min-width: 0;
+    display: grid;
+    gap: 6px;
+}
+
+.pro-inbox-card-copy strong {
+    color: var(--chat-text-strong);
+    font-size: 16px;
+}
+
+.pro-inbox-card-copy span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pro-inbox-card-arrow {
+    margin-left: auto;
+    color: var(--chat-accent-dark);
+    font-size: 28px;
+}
+
+.pro-inbox-empty {
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+    padding: 64px 24px;
+    color: var(--chat-text-muted);
+    text-align: center;
+}
+
+.pro-inbox-empty h2,
+.pro-inbox-empty p {
+    margin: 0;
+}
+
+.pro-message-attachment {
+    display: block;
+    margin: 8px 0 0 auto;
+    color: var(--chat-accent-dark);
+    font-size: 13px;
+    text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+    .pro-inbox { padding: 28px 18px; }
+    .pro-inbox-heading { align-items: start; flex-direction: column; }
+}
+
 .pro-conv-text {
     min-width: 0;
 

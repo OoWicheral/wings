@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -360,6 +360,11 @@ export default function Community() {
     // Composer
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    const [postImage, setPostImage] = useState<File | null>(null);
+    const postImageUrl = useMemo(
+        () => (postImage ? URL.createObjectURL(postImage) : null),
+        [postImage]
+    );
     const [isPublishing, setIsPublishing] = useState(false);
     const [publishError, setPublishError] = useState("");
 
@@ -498,12 +503,14 @@ export default function Community() {
             const created = await createPost({
                 title: trimmedTitle,
                 content: trimmedContent,
+                image: postImage,
             });
 
 
             setPosts((prev) => [created, ...prev]);
             setTitle("");
             setContent("");
+            setPostImage(null);
         } catch (error) {
             if (error instanceof ApiError && error.errors) {
                 const firstField = Object.values(error.errors)[0];
@@ -654,6 +661,16 @@ export default function Community() {
                                 maxLength={500}
                                 disabled={isPublishing}
                             />
+                            <label className="community-image-picker">
+                                <span>{postImage?.name ?? "Adicionar imagem"}</span>
+                                <input
+                                    type="file"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    onChange={(event) => setPostImage(event.target.files?.[0] ?? null)}
+                                    disabled={isPublishing}
+                                />
+                            </label>
+                            {postImageUrl && <img className="community-image-preview" src={postImageUrl} alt="Prévia da imagem da publicação" />}
                         </div>
 
                         <button

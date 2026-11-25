@@ -269,6 +269,26 @@
     color: var(--pros-text-muted);
 }
 
+.pros-conversations-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 42px;
+    margin-top: 16px;
+    padding: 0 16px;
+    border: 1px solid #d96a0b;
+    border-radius: 10px;
+    color: #c25a00;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background .15s ease, color .15s ease;
+}
+
+.pros-conversations-link:hover {
+    background: #d96a0b;
+    color: #fff;
+}
+
 .pros-search {
     display: flex;
     align-items: center;

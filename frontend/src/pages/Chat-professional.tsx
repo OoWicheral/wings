@@ -21,6 +21,7 @@ import {
     deleteProfessionalMessage,
     listProfessionalChats,
     listProfessionalMessages,
+    openProfessionalMessageFile,
     sendProfessionalMessage,
     updateProfessionalMessage,
 } from "../service/professional-chat";
@@ -82,6 +83,7 @@ export default function ChatProfessional() {
 
     /* Interface */
     const [draft, setDraft] = useState("");
+    const [attachment, setAttachment] = useState<File | null>(null);
     const [errorMessage, setErrorMessage] = useState("");
     const [search, setSearch] = useState("");
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -126,7 +128,7 @@ export default function ChatProfessional() {
         return () => {
             cancelled = true;
         };
-    }, [user]);
+    }, [user, activeChatId]);
 
     /* Mensagens da conversa aberta */
     useEffect(() => {
@@ -139,6 +141,7 @@ export default function ChatProfessional() {
             setEditingId(null);
             setEditingDraft("");
             setDraft("");
+            setAttachment(null);
             setErrorMessage("");
 
             /* Troca de conversa: limpa a anterior antes de buscar a nova. */
@@ -225,7 +228,7 @@ export default function ChatProfessional() {
 
         const content = draft.trim();
 
-        if (!content || isSending) return;
+        if ((!content && !attachment) || isSending) return;
 
         setIsSending(true);
         setErrorMessage("");
@@ -236,24 +239,25 @@ export default function ChatProfessional() {
 
         const optimistic: ProfessionalMessage = {
             id_msg: tempId,
-            content,
+            content: content || null,
             id_usuario: user?.id ?? null,
             id_chat_profissional: activeChatId,
             created_at: new Date().toISOString(),
             updated_at: null,
-            anexo_url: null,
+            anexo_url: attachment ? "pending" : null,
             audio_url: null,
         };
 
         setMessages((prev) => [...prev, optimistic]);
 
         try {
-            const saved = await sendProfessionalMessage(activeChatId, content);
+            const saved = await sendProfessionalMessage(activeChatId, content, attachment);
 
             setMessages((prev) => [
                 ...prev.filter((message) => message.id_msg !== tempId),
                 saved,
             ]);
+            setAttachment(null);
 
             setChats((prev) =>
                 prev.map((chat) =>
@@ -262,6 +266,7 @@ export default function ChatProfessional() {
                               ...chat,
                               last_message: {
                                   content: saved.content,
+                                  anexo_url: saved.anexo_url,
                                   created_at: saved.created_at,
                               },
                           }
@@ -310,6 +315,15 @@ export default function ChatProfessional() {
             await navigator.clipboard.writeText(content);
         } catch {
             /* Área de transferência indisponível. */
+        }
+    }
+
+    async function handleOpenAttachment(url: string) {
+        try {
+            const objectUrl = await openProfessionalMessageFile(url);
+            window.open(objectUrl, "_blank", "noopener,noreferrer");
+        } catch (error) {
+            setErrorMessage(readError(error, "Não foi possível abrir o anexo."));
         }
     }
 
@@ -407,6 +421,11 @@ export default function ChatProfessional() {
                 </div>
 
                 <nav className="chat-nav" aria-label="Menu do chat">
+                    <Link to="/chat-profissional" className="chat-nav-item" aria-current={!hasConversation ? "page" : undefined}>
+                        <IconUser />
+                        <span className="chat-nav-label">Conversas</span>
+                    </Link>
+
                     <Link to="/profissionais" className="chat-new-chat">
                         <IconEdit />
                         <span className="chat-nav-label">Nova Conversa</span>
@@ -484,7 +503,7 @@ export default function ChatProfessional() {
                                         </span>
                                         <span className="pro-conv-preview">
                                             {chat.last_message?.content ??
-                                                "Sem mensagens ainda"}
+                                                (chat.last_message?.anexo_url ? "Anexo enviado" : "Sem mensagens ainda")}
                                         </span>
                                     </span>
                                 </button>
@@ -626,8 +645,14 @@ export default function ChatProfessional() {
                                                 </form>
                                             ) : (
                                                 <div className="chat-user-bubble">
-                                                    {content}
+                                                    {content || (message.anexo_url ? "Anexo enviado" : "")}
                                                 </div>
+                                            )}
+
+                                            {message.anexo_url && message.anexo_url !== "pending" && (
+                                                <button type="button" className="pro-message-attachment" onClick={() => void handleOpenAttachment(message.anexo_url!)}>
+                                                    Abrir anexo
+                                                </button>
                                             )}
 
                                             {!isEditing && (
@@ -666,6 +691,12 @@ export default function ChatProfessional() {
                                             {content || "Anexo enviado"}
                                         </p>
 
+                                        {message.anexo_url && (
+                                            <button type="button" className="pro-message-attachment" onClick={() => void handleOpenAttachment(message.anexo_url!)}>
+                                                Abrir anexo
+                                            </button>
+                                        )}
+
                                         {content && (
                                             <div className="chat-message-actions">
                                                 <button
@@ -700,14 +731,21 @@ export default function ChatProfessional() {
                                 placeholder={`Mensagem para ${participantName}`}
                                 ariaLabel={`Mensagem para ${participantName}`}
                                 maxLength={MAX_MESSAGE_LENGTH}
+                                attachment={attachment}
+                                onAttachmentChange={setAttachment}
                             />
                         </div>
                     </>
                 ) : (
-                    <div className="chat-empty">
-                        <h1 className="chat-empty-title">
-                            Escolha uma conversa.
-                        </h1>
+                    <section className="pro-inbox">
+                        <header className="pro-inbox-heading">
+                            <div>
+                                <p>WINGS · APOIO PROFISSIONAL</p>
+                                <h1>Suas conversas</h1>
+                                <span>Acesse aqui as conversas iniciadas com os profissionais.</span>
+                            </div>
+                            <Link to="/profissionais">Encontrar profissionais</Link>
+                        </header>
 
                         {errorMessage && (
                             <p className="chat-error" role="alert">
@@ -715,14 +753,33 @@ export default function ChatProfessional() {
                             </p>
                         )}
 
-                        <p className="pro-empty-hint">
-                            Selecione uma conversa na lateral ou{" "}
-                            <Link to="/profissionais">
-                                encontre um profissional
-                            </Link>{" "}
-                            para começar.
-                        </p>
-                    </div>
+                        {isLoadingChats ? (
+                            <p className="pro-inbox-empty">Carregando suas conversas…</p>
+                        ) : visibleChats.length ? (
+                            <div className="pro-inbox-list">
+                                {visibleChats.map((chat) => {
+                                    const chatAvatar = avatarUrl(chat.participant.avatar);
+                                    return (
+                                        <button key={chat.chat_id} type="button" className="pro-inbox-card" onClick={() => handleSelectChat(chat.chat_id)}>
+                                            <span className="pro-conv-avatar">{chatAvatar ? <img src={chatAvatar} alt="" /> : <IconUser />}</span>
+                                            <span className="pro-inbox-card-copy">
+                                                <strong>{chat.participant.name ?? "Profissional"}</strong>
+                                                <span>{chat.last_message?.content ?? (chat.last_message?.anexo_url ? "Anexo enviado" : "Conversa iniciada. Envie uma mensagem para começar.")}</span>
+                                            </span>
+                                            <span className="pro-inbox-card-arrow">›</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="pro-inbox-empty">
+                                <span className="pro-inbox-empty-icon"><IconUser /></span>
+                                <h2>Suas conversas aparecerão aqui</h2>
+                                <p>Quando iniciar uma conversa com um profissional, você poderá acompanhar tudo nesta tela.</p>
+                                <Link to="/profissionais">Ver profissionais</Link>
+                            </div>
+                        )}
+                    </section>
                 )}
             </main>
         </div>

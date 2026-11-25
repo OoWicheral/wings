@@ -292,6 +292,9 @@ export default function Professionals() {
                                 ? `${total} profissional${total > 1 ? "is" : ""} encontrado${total > 1 ? "s" : ""}`
                                 : "Encontre apoio profissional"}
                         </p>
+                        <Link to="/chat-profissional" className="pros-conversations-link">
+                            Minhas conversas
+                        </Link>
                     </div>
 
                     <div className="pros-search">

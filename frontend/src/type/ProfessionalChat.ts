@@ -7,6 +7,7 @@ export interface ProfessionalChatParticipant {
 
 export interface ProfessionalChatLastMessage {
     content: string | null;
+    anexo_url?: string | null;
     created_at: string;
 }
 
