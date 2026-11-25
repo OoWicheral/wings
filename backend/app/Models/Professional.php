@@ -49,6 +49,6 @@ class Professional extends Model
 
     public function setDataExpiraCertificadoAttribute($value): void
     {
-        $this->attributes['data_expira_certified'] = $value;
+        $this->attributes['data_expira_certificado'] = $value;
     }
 }
