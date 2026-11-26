@@ -127,3 +127,72 @@ O Wings foi desenvolvido utilizando uma arquitetura separada entre **Frontend, B
 │              MySQL              │
 └─────────────────────────────────┘
 ```
+
+## Pré-requisitos
+
+Certifique-se de ter as seguintes ferramentas instaladas na sua máquina:
+- [Git](https://git-scm.com)
+- [PHP 8.5](https://php.net)
+- [Composer](https://getcomposer.org)
+- [Node.js 20.x](https://nodejs.org)
+- Banco de dados configurado (MySQL)
+
+## Como rodar o projeto
+
+Clone o repositório e acesse a pasta raiz:
+```bash
+git clone https://github.com/OoWicheral/wings.git
+cd wings
+```
+
+---
+
+### 1. Back-end (Laravel)
+
+Abra um terminal e acesse a pasta do back-end:
+```bash
+cd backend
+```
+
+Instale as dependências do PHP:
+```bash
+composer install
+```
+
+Copie o arquivo de variáveis de ambiente e gere a chave da aplicação:
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+> **Atenção:** Abra o arquivo `.env` gerado e preencha as credenciais do seu banco de dados (`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
+
+Execute as migrations do banco de dados:
+```bash
+php artisan migrate
+```
+
+Inicie o servidor do back-end:
+```bash
+php artisan serve
+```
+
+---
+
+### 2. Front-end (Node.js)
+
+Com o servidor do back-end rodando, abra um **novo terminal** na raiz do projeto e acesse a pasta do front-end:
+```bash
+cd frontend
+```
+
+Instale as dependências:
+```bash
+npm install
+```
+
+Inicie o servidor de desenvolvimento:
+```bash
+npm run dev
+```
+O front-end estará acessível na porta exibida no terminal (geralmente `http://localhost:5173` ou `http://localhost:3000`).
